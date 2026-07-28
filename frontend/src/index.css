@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@font-face {
+    font-family: "karnivore";
+    src: url(/fonts/KARNIVOL.ttf) format("truetype");
+}
+
+@layer utilities {
+    .font-karnivore {
+        font-family: "karnivore";
+    }
+}

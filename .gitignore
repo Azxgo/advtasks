@@ -1,0 +1,25 @@
+
+*
+
+# PERMITIR estas carpetas
+!frontend/
+!backend/
+!.gitignore
+
+!README.md
+
+# Permitir contenido dentro de ellas
+!frontend/**
+!backend/**
+
+# Ignorar específicamente dentro de back-end
+backend/node_modules/
+backend/.env
+
+frontend/node_modules/
+frontend/src/components/shelf/
+frontend/src/components/toolbar/
+
+__pycache__/
+*.pyc
+*.pyo
