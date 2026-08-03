@@ -136,6 +136,25 @@ export function useTasksActions(
         }
     }
 
+    const handleUpdateTask = async (
+        id: string,
+        updates: {
+            name: string;
+            hour: number;
+            minute: number;
+            level: number;
+            attributes: TaskAttribute[];
+        }
+    ) => {
+        return handle(`${BASE_URL}/update/${id}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(updates),
+        });
+    };
+
     const handleDeleteTask = async (id: string) => {
         handle(`${BASE_URL}/delete/${id}`, {
             method: "DELETE",
@@ -300,6 +319,7 @@ export function useTasksActions(
         saveTime,
         handleAddTask,
         handleDeleteTask,
+        handleUpdateTask,
         addSubTask,
         updateSubTask,
         deleteSubTask,

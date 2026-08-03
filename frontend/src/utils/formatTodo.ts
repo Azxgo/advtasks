@@ -1,9 +1,18 @@
+import type { IconType } from "react-icons";
+import { FaCheck, FaClock, FaSpinner, FaTimes } from "react-icons/fa";
 
 export const statusMap: Record<string, string> = {
   "pending": "Pendiente",
   "in-progress": "En progreso",
   "done": "Completado",
   "missed": "Incumplida"
+};
+
+export const statusMini: Record<string, IconType> = {
+    "pending": FaClock,
+    "in-progress": FaSpinner,
+    "done": FaCheck,
+    "missed": FaTimes,
 };
 
 export const levelColors: Record<number, string> = {

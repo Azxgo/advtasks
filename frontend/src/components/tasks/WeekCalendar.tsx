@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
+import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { apiClient } from "../../config/apiClient";
 import type { DailyStat } from "../../types/Stats";
 
@@ -66,7 +66,7 @@ export function WeekCalendar({ weekDays, currentDate, goToDate, changeDay, openC
         return "bg-red-100 border-red-200 dark:border-red-800 dark:bg-red-900";
     }
 
-    
+
 
     return (
         <div className="flex flex-col gap-3 w-full justify-center">
@@ -76,15 +76,18 @@ export function WeekCalendar({ weekDays, currentDate, goToDate, changeDay, openC
                         onClick={() => changeDay(-1)}
                         className="p-2 border border-gray-300 dark:border-zinc-600 hover:bg-gray-100 dark:hover:bg-zinc-700  rounded-lg 
                         transition-all duration-300 cursor-pointer">
-                        <FaAngleLeft size={26} />
+                        <FaAngleLeft className="size-6 sm:size-8" />
                     </button>
                     {isFuture && (
                         <button
                             onClick={() => goToDate(new Date())}
-                            className="py-2 px-3 border border-gray-300 dark:border-zinc-600 hover:bg-gray-100 dark:hover:bg-zinc-700  rounded-lg 
+                            className="py-2 px-2 sm:px-3 border border-gray-300 dark:border-zinc-600 hover:bg-gray-100 dark:hover:bg-zinc-700  rounded-lg 
                         transition-all duration-300 cursor-pointer"
                         >
-                            Volver a Hoy
+                            <FaAngleDoubleLeft className="block sm:hidden text-lg" />
+                            <span className="hidden sm:block">
+                                Volver a Hoy
+                            </span>
                         </button>
                     )}
                 </div>
@@ -92,7 +95,7 @@ export function WeekCalendar({ weekDays, currentDate, goToDate, changeDay, openC
                     <h1
                         onClick={openCalendar}
                         className="absolute left-1/2 -translate-x-1/2 text-xl text-center cursor-pointer 
-                        hover:scale-105 active:scale-95 transition-all duration-200">
+                        hover:scale-105 active:scale-95 transition-all duration-200 text-[15px] sm:text-base">
                         {formattedDate}
                     </h1>
 
@@ -102,17 +105,20 @@ export function WeekCalendar({ weekDays, currentDate, goToDate, changeDay, openC
                     {isPast && (
                         <button
                             onClick={() => goToDate(new Date())}
-                            className="py-2 px-3 border border-gray-300 dark:border-zinc-600 hover:bg-gray-100 dark:hover:bg-zinc-700  rounded-lg 
+                            className="py-2 px-2 sm:px-3 border border-gray-300 dark:border-zinc-600 hover:bg-gray-100 dark:hover:bg-zinc-700  rounded-lg 
                         transition-all duration-300 cursor-pointer"
                         >
-                            Volver a Hoy
+                            <FaAngleDoubleRight className="block sm:hidden text-lg" />
+                            <span className="hidden sm:block">
+                                Volver a Hoy
+                            </span>
                         </button>
                     )}
                     <button
                         onClick={() => changeDay(+1)}
                         className="p-2 border border-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700  dark:border-zinc-600 rounded-lg 
                         transition-all duration-200 cursor-pointer">
-                        <FaAngleRight size={26} />
+                        <FaAngleRight className="size-6 sm:size-8" />
                     </button>
                 </div>
             </div>
@@ -128,7 +134,7 @@ export function WeekCalendar({ weekDays, currentDate, goToDate, changeDay, openC
                             className="bg-gray-100 hover:bg-indigo-300 dark:bg-zinc-700 dark:hover:bg-indigo-600/50 rounded-t-lg 
                             p-2 flex justify-center items-center cursor-pointer font-semibold"
                         >
-                            <span className="select-none">{day.dayName}</span>
+                            <span className="text-xs sm:text-base select-none">{day.dayName}</span>
 
                         </div>
                         <div className={`flex items-center justify-center 
@@ -138,7 +144,7 @@ export function WeekCalendar({ weekDays, currentDate, goToDate, changeDay, openC
                                 : getColor(day.fulldate)
 
                             }`}>
-                            <span>{day.dayNumber}</span>
+                            <span className="text-xs sm:text-base select-none">{day.dayNumber}</span>
                         </div>
                     </div>
                 ))}

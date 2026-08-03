@@ -142,6 +142,33 @@ export const createTask = async (req, res) => {
     }
 };
 
+export const updateTask = async (req, res) => {
+    try {
+        const { id } = req.params
+        const { name, hour, minute, level, attributes } = req.body
+        const userId = req.user?.id || req.guestSession?.id;
+
+        const task = await Task.findOneAndUpdate(
+            { _id: id, userId },
+            {
+                "$set": {
+                    name: name,
+                    hour: hour,
+                    minute: minute,
+                    level: level,
+                    attributes: attributes
+                }
+            },
+            { new: true }
+        )
+
+        return res.json(task);
+    } catch (e) {
+        res.status(500).json({ message: e.message })
+    }
+
+}
+
 export const changeDifficult = async (req, res) => {
     try {
         const { id } = req.params
@@ -255,10 +282,11 @@ export const handleAtributes = async (req, res) => {
 export const toggleCompleted = async (req, res) => {
     try {
         const { id } = req.params
+        const userId = req.user?.id || req.guestSession?.id;
 
         const task = await Task.findOne({
             _id: id,
-            userId: req.user.id
+            userId
         })
 
         if (!task) {

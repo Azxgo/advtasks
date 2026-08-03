@@ -8,7 +8,7 @@ export function MainLayout() {
             <Header />
             <div className='mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 
             bg-gray-200/10 dark:bg-zinc-800 transition-colors duration-300'>
-                <div className=' p-5'>
+                <div className='py-5 sm:p-5'>
                     <Outlet />
                 </div>
             </div>

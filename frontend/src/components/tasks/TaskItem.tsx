@@ -1,8 +1,8 @@
-import { FaCalendarAlt, FaCopy, FaEllipsisV, FaHistory, FaListUl, FaTrash } from "react-icons/fa";
+import { FaCalendarAlt, FaCopy, FaEdit, FaEllipsisV, FaHistory, FaListUl, FaTrash } from "react-icons/fa";
 import { attributeIcons } from "../../utils/atributeIcons";
-import { levelColors, statusMap, statusStyles } from "../../utils/formatTodo";
+import { levelColors, statusMap, statusMini, statusStyles } from "../../utils/formatTodo";
 import type { TaskAttribute, TaskItem } from "../../types/Tasks";
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useTimeDrag } from "../../hooks/useTimeDrag";
 import { MenuRoot } from "../menu/MenuRoot";
 import { MenuButton } from "../menu/MenuButton";
@@ -25,6 +25,7 @@ type Props = {
     saveTime: (id: string, field: "hour" | "minute", value: number) => void;
     onAutomate: (task: TaskItem) => void
     onReschedule: (task: TaskItem) => void
+    onEdit: (task: TaskItem) => void
     onDuplicate: (id: string) => void
     onDelete: (id: string) => void
     onAddSubTask: (id: string) => void
@@ -33,10 +34,12 @@ type Props = {
 }
 
 export function TaskItem({ task, allAttributes, toggleCompleted, changeStatus, changeDificult,
-    changeAtribute, changeName, changeTimeLocal, saveTime, onAutomate, onReschedule,
+    changeAtribute, changeName, changeTimeLocal, saveTime, onAutomate, onReschedule, onEdit,
     onDuplicate, onDelete, onAddSubTask, updateSubTask, deleteSubTask }: Props) {
     const [editing, setEditing] = useState(false);
     const [name, setName] = useState(task.name)
+
+    const [expanded, setExpanded] = useState(false)
 
     const [confirmModalOpen, setConfirmModalOpen] = useState(false);
 
@@ -72,26 +75,26 @@ export function TaskItem({ task, allAttributes, toggleCompleted, changeStatus, c
             className={`flex flex-col w-full group transition`}
             key={task._id}
         >
-            <div className={`flex px-4 py-3 w-full items-center transition-all duration-300
+            <div className={`flex px-3 sm:px-4 py-3 w-full items-center transition-all duration-300
                                 ${task.status === "in-progress"
                     ? "bg-gray-200 hover:bg-gray-300 dark:bg-zinc-700 dark:hover:bg-zinc-600"
                     : "bg-gray-100 hover:bg-gray-300 dark:bg-zinc-700/20 dark:hover:bg-zinc-600"
                 }
                 `}>
-                <div className="flex w-full items-center gap-4">
-                    <div className="flex w-10 select-none">
+                <div className="flex w-full items-center gap-2 sm:gap-4">
+                    <div className="flex w-6 sm:w-10 select-none">
                         <span
                             onMouseDown={hourDrag.startDrag}
-                            className="font-semibold cursor-ns-resize select-none"
+                            className="font-semibold cursor-ns-resize select-none text-[10px] sm:text-base"
                         >
                             {formatTime(task.hour)}
                         </span>
 
-                        <span>:</span>
+                        <span className="text-[10px] sm:text-base">:</span>
 
                         <span
                             onMouseDown={minuteDrag.startDrag}
-                            className="font-semibold cursor-ns-resize select-none"
+                            className="font-semibold cursor-ns-resize select-none text-[10px] sm:text-base"
                         >
                             {formatTime(task.minute)}
                         </span>
@@ -100,7 +103,7 @@ export function TaskItem({ task, allAttributes, toggleCompleted, changeStatus, c
                         type="checkbox"
                         checked={task.completed ?? false}
                         onChange={() => toggleCompleted(task._id, task.date)}
-                        className="w-4 h-4"
+                        className="w-3 h-3 sm:w-4 sm:h-4"
                     />
                     {editing ? (
                         <input
@@ -114,13 +117,14 @@ export function TaskItem({ task, allAttributes, toggleCompleted, changeStatus, c
                                 }
                             }}
                             autoFocus
-                            className="w-40 sm:w-56 md:w-80 border rounded bg-transparent outline-none border-none"
+                            className="w-40 sm:w-56 md:w-80 border rounded bg-transparent outline-none border-none text-[12px] sm:text-base"
                         />
                     )
                         : (
                             <h2
                                 onClick={() => setEditing(true)}
-                                className="w-40 sm:w-56 md:w-80  truncate select-none cursor-pointer min-h-[1em]"
+                                className="w-40 sm:w-56 md:w-80 truncate select-none cursor-pointer min-h-[1em]
+                                text-[12px] sm:text-base"
                             >
                                 {task.name}
                             </h2>
@@ -136,8 +140,9 @@ export function TaskItem({ task, allAttributes, toggleCompleted, changeStatus, c
                     )}
 
                 </div>
+
                 <div className="flex items-center w-full">
-                    <div className="flex items-center w-full justify-around gap-2">
+                    <div className="hidden md:flex items-center w-full justify-around gap-2">
                         <h1
                             onClick={() => {
                                 if (!task.completed) {
@@ -180,24 +185,46 @@ export function TaskItem({ task, allAttributes, toggleCompleted, changeStatus, c
                         </div>
                     </div>
                 </div>
+                <div
+                    onClick={() => {
+                        if (!task.completed) {
+                            changeStatus(task._id, task.date)
+                        }
+                    }}
+                    className={`md:hidden rounded-md  text-[10px] mx-1 p-1 sm:text-base
+                        ${statusStyles[task.status ?? "pending"]}
+                        `}
+                >
+                    {React.createElement(statusMini[task.status ?? "pending"], {
+                        className: "size-2 sm:size-5"
+                    })}
+                </div>
                 <MenuRoot>
                     <MenuButton
                         className="rounded-md flex items-center justify-center
                             bg-white/80 dark:bg-zinc-500 backdrop-blur 
                             border border-gray-200 dark:border-zinc-600 shadow-sm text-gray-600 dark:text-white 
                             dark:hover:text-white hover:text-gray-900
-                            opacity-0 group-hover:opacity-100 transition duration-400 p-2"
+                            md:opacity-0 group-hover:opacity-100 transition duration-400
+                            p-1 md:p-2"
                     >
-                        <FaEllipsisV />
+                        <FaEllipsisV className="size-2 sm:size-5" />
                     </MenuButton>
                     <MenuContent position="bottom">
+                        <MenuItem
+                            onClick={() => onEdit(task)}
+                            className="md:hidden flex w-full gap-2 py-2 items-center rounded-lg cursor-pointer"
+                        >
+                            <FaEdit color={"gray"} className="size-4 sm:size-6" />
+                            <p className="text-xs sm:text-base font-semibold">Editar</p>
+                        </MenuItem>
                         {!task.originalTaskId && (
                             <MenuItem
                                 onClick={() => onAutomate(task)}
                                 className="flex w-full gap-2 py-2 items-center rounded-lg cursor-pointer"
                             >
-                                <FaHistory color={"gray"} size={22} />
-                                <p className="text-md font-semibold">Automatizar</p>
+                                <FaHistory color={"gray"} className="size-4 sm:size-6" />
+                                <p className="text-xs sm:text-base font-semibold">Automatizar</p>
                             </MenuItem>
                         )}
 
@@ -205,29 +232,29 @@ export function TaskItem({ task, allAttributes, toggleCompleted, changeStatus, c
                             onClick={() => onReschedule(task)}
                             className="flex w-full gap-2 py-2  items-center rounded-lg cursor-pointer"
                         >
-                            <FaCalendarAlt color={"gray"} size={22} />
-                            <p className="text-md font-semibold">Reprogramar</p>
+                            <FaCalendarAlt color={"gray"} className="size-4 sm:size-6" />
+                            <p className="text-xs sm:text-base font-semibold">Reprogramar</p>
                         </MenuItem>
                         <MenuItem
                             onClick={() => onAddSubTask(task._id)}
                             className="flex w-full gap-2 py-2  items-center rounded-lg cursor-pointer"
                         >
-                            <FaListUl color={"gray"} size={22} />
-                            <p className="text-md font-semibold">Añadir Subtarea</p>
+                            <FaListUl color={"gray"} className="size-4 sm:size-6" />
+                            <p className="text-xs sm:text-base font-semibold">Añadir Subtarea</p>
                         </MenuItem>
                         <MenuItem
                             onClick={() => onDuplicate(task._id)}
                             className="flex w-full gap-2 p-2 items-center rounded-lg cursor-pointer"
                         >
-                            <FaCopy color={"gray"} size={22} />
-                            <p className="text-md font-semibold">Duplicar</p>
+                            <FaCopy color={"gray"} className="size-4 sm:size-6" />
+                            <p className="text-xs sm:text-base font-semibold">Duplicar</p>
                         </MenuItem>
                         <MenuItem
                             onClick={() => setConfirmModalOpen(true)}
                             className="flex w-full gap-2 p-2 items-center rounded-lg cursor-pointer"
                         >
-                            <FaTrash color={"gray"} size={22} />
-                            <p className="text-md font-semibold">Borrar</p>
+                            <FaTrash color={"gray"} className="size-4 sm:size-6" />
+                            <p className="text-xs sm:text-base font-semibold">Borrar</p>
                         </MenuItem>
                     </MenuContent>
                 </MenuRoot>

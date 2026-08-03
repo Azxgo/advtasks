@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addSubTask, changeDifficult, changeName, changeStatus, changeTime, createTask, deleteAllTasksByUser, deleteSubTask, deleteTask, duplicateTask, getTasks, getTasksByDay, handleAtributes, reOrderTasks, rescheduleTask, toggleCompleted, updateSubTask } from "../controllers/tasks.js";
+import { addSubTask, changeDifficult, changeName, changeStatus, changeTime, createTask, deleteAllTasksByUser, deleteSubTask, deleteTask, duplicateTask, getTasks, getTasksByDay, handleAtributes, reOrderTasks, rescheduleTask, toggleCompleted, updateSubTask, updateTask } from "../controllers/tasks.js";
 import { verifyAccessToken } from "../middlewares/verifyAccessToken.js";
 
 export const taskRouter = Router()
@@ -21,3 +21,4 @@ taskRouter.delete("/deleteSubTask/:taskId/:subTaskId", verifyAccessToken, delete
 taskRouter.patch("/reOrder", verifyAccessToken, reOrderTasks)
 taskRouter.post("/duplicateTask/:id", verifyAccessToken, duplicateTask)
 taskRouter.delete("/deleteAllTasksByUser", verifyAccessToken, deleteAllTasksByUser)
+taskRouter.patch("/update/:id", verifyAccessToken, updateTask)

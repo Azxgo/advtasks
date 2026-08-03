@@ -57,17 +57,17 @@ export function LevelBar({ }: Props) {
 
     return (
         <div className="flex w-full bg-indigo-300 dark:bg-indigo-600/50 rounded-lg px-4 py-3">
-            <div className="flex w-full gap-3 items-center">
+            <div className="flex w-full gap-2 sm:gap-3 items-center">
 
-                <div className="min-w-15 font-karnivore text-2xl">
+                <div className="sm:min-w-15 font-karnivore text-base sm:text-2xl">
                     {time}
                 </div>
                 {isGuest ? (
-                    <div className="font-karnivore text-2xl">
+                    <div className="font-karnivore text-base sm:text-2xl">
                         {formatName("GUEST")}
                     </div>
                 ) : (
-                    <div className="font-karnivore text-2xl">
+                    <div className="font-karnivore text-base sm:text-2xl">
                         {formatName(user?.name ?? "")}
                     </div>
                 )}
@@ -76,17 +76,17 @@ export function LevelBar({ }: Props) {
 
             <div className="flex flex-col w-full gap-1">
                 <div className="flex justify-between">
-                    <p className="font-karnivore">
+                    <p className="text-xs sm:text-base font-karnivore">
                         Lv. {level}
                     </p>
 
-                    <p className="font-karnivore">
+                    <p className="text-xs sm:text-base font-karnivore">
                         EXP Total: {totalExp}
                     </p>
                 </div>
 
                 <div className="relative group w-full">
-                    <div className="w-full bg-gray-300 dark:bg-zinc-500  rounded-md h-4 overflow-hidden">
+                    <div className="w-full bg-gray-300 dark:bg-zinc-500  rounded-md h-2 sm:h-4 overflow-hidden">
                         <div
                             className="bg-indigo-500 dark:bg-indigo-400 h-full transition-all duration-500"
                             style={{

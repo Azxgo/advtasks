@@ -48,10 +48,10 @@ export function RescheduleModal({ task, setTasks, onClose }: Props) {
                 exit={{ scale: 0.8, opacity: 0 }}
                 transition={{ duration: 0.2 }}
                 onClick={(e) => e.stopPropagation()}
-                className="relative bg-white dark:bg-zinc-800 rounded-xl p-6 w-[700px] shadow-lg border border-gray-200 dark:border-zinc-700 shadow-lg"
+                className="relative bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-xl p-6 w-[90vw] sm:min-w-[700px] max-w-[800px] shadow-lg"
             >
                 <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-bold">
+                    <h2 className="text-base sm:text-xl font-bold">
                         Reprogramar tarea
                     </h2>
 
@@ -63,9 +63,9 @@ export function RescheduleModal({ task, setTasks, onClose }: Props) {
 
                 </div>
 
-                <div className="grid grid-cols-[130px_1fr] gap-x-4 gap-y-3 items-center">
+                <div className="grid sm:grid-cols-[130px_1fr] gap-x-4 gap-y-2 sm:gap-y-3 items-center">
 
-                    <label className="font-medium text-gray-600 dark:text-gray-400" >Fecha</label>
+                    <label className="text-sm sm:text-base font-medium text-gray-600 dark:text-gray-400" >Fecha</label>
                     <input
                         type="date"
                         value={date}

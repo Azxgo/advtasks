@@ -1,30 +1,38 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { FaTimes } from "react-icons/fa"
 import { levelColors } from "../../utils/formatTodo"
-import type { TaskAttribute } from "../../types/Tasks"
+import type { TaskAttribute, TaskItem } from "../../types/Tasks"
 import { AtributeToolTip } from "../ui/AttributeToolTip"
 import { attributeIcons } from "../../utils/atributeIcons"
 
 type Props = {
+    task: TaskItem | null
     onClose: () => void
-    onAdd: (task: any) => Promise<void>
+    onEdit: (
+        id: string,
+        updates: {
+            name: string;
+            hour: number;
+            minute: number;
+            level: number;
+            attributes: TaskAttribute[];
+        }
+    ) => Promise<void>;
 }
 
-export function AddTaskModal({ onClose, onAdd }: Props) {
+export function EditTaskModal({ task, onClose, onEdit }: Props) {
 
-    const days = ["M", "T", "W", "T", "V", "S", "S"]
 
-    const [name, setName] = useState("")
-    const [time, setTime] = useState("")
-    const [date, setDate] = useState("")
+    const [name, setName] = useState(task?.name ?? "")
+    const [time, setTime] = useState(
+        `${(task?.hour ?? 0).toString().padStart(2, "0")}:${(task?.minute ?? 0)
+            .toString()
+            .padStart(2, "0")}`
+    );
 
-    const [difficulty, setDifficulty] = useState(1)
-    const [attributes, setAttirbutes] = useState<TaskAttribute[]>([])
-
-    const [repeatTask, setRepeatTask] = useState(false)
-    const [selectedDays, setSelectedDays] = useState<number[]>([])
-    const [endDate, setEndDate] = useState("")
+    const [difficulty, setDifficulty] = useState(task?.level ?? 1)
+    const [attributes, setAttributes] = useState(task?.attributes ?? [])
 
     const [loading, setLoading] = useState(false)
 
@@ -41,61 +49,48 @@ export function AddTaskModal({ onClose, onAdd }: Props) {
     }
 
     const handleAttributes = (attr: TaskAttribute) => {
-        setAttirbutes(prev =>
+        setAttributes(prev =>
             prev.includes(attr)
                 ? prev.filter(a => a !== attr)
                 : [...prev, attr]
         )
     }
 
-    const toggleDay = (index: number) => {
-        setSelectedDays(prev =>
-            prev.includes(index)
-                ? prev.filter(d => d !== index)
-                : [...prev, index]
-        )
-    }
 
-    const handleAdd = async () => {
+    const handleEdit = async () => {
+        if (!task) return;
+
         try {
-
-            if (repeatTask) {
-
-                if (selectedDays.length === 0) {
-                    alert("Selecciona al menos un día");
-                    return;
-                }
-
-                if (!endDate) {
-                    alert("Selecciona una fecha final");
-                    return;
-                }
-            }
-
             const [hour, minute] = time
                 ? time.split(":").map(Number)
-                : [0, 0]
+                : [0, 0];
 
-            await onAdd({
+            await onEdit(task._id, {
                 name,
                 hour,
                 minute,
                 level: difficulty,
                 attributes,
-                status: "pending",
-                completed: false,
-                date,
+            });
 
-                repeatTask,
-                selectedDays,
-                endDate
-            })
-
-            onClose()
+            onClose();
         } catch (e) {
-            console.error(e)
+            console.error(e);
         }
-    }
+    };
+
+    useEffect(() => {
+        if (!task) return;
+
+        setName(task.name);
+        setTime(
+            `${task.hour.toString().padStart(2, "0")}:${task.minute
+                .toString()
+                .padStart(2, "0")}`
+        );
+        setDifficulty(task.level ?? 1);
+        setAttributes(task.attributes ?? []);
+    }, [task]);
 
     return (
         <motion.div
@@ -116,7 +111,7 @@ export function AddTaskModal({ onClose, onAdd }: Props) {
             >
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-base sm:text-xl font-bold">
-                        Añadir Tarea
+                        Editar Tarea
                     </h2>
 
                     <button
@@ -140,14 +135,6 @@ export function AddTaskModal({ onClose, onAdd }: Props) {
                         type="time"
                         value={time}
                         onChange={(e => setTime(e.target.value))}
-                        className="w-full mt-1 border border-gray-400 dark:border-zinc-600 rounded px-2 py-2 text-sm focus:outline-none focus:border-zinc-500"
-                    />
-
-                    <label className="text-sm sm:text-base font-medium text-gray-600 dark:text-gray-400" >Fecha</label>
-                    <input
-                        type="date"
-                        value={date}
-                        onChange={e => setDate(e.target.value)}
                         className="w-full mt-1 border border-gray-400 dark:border-zinc-600 rounded px-2 py-2 text-sm focus:outline-none focus:border-zinc-500"
                     />
 
@@ -181,61 +168,12 @@ export function AddTaskModal({ onClose, onAdd }: Props) {
                             );
                         })}
                     </div>
-
-                    <label className="text-sm sm:text-base font-medium text-gray-600 dark:text-gray-400">Repetir Tarea</label>
-
-                    <div className="flex items-center gap-4">
-                        <input
-                            type="checkbox"
-                            onClick={() => setRepeatTask(prev => !prev)}
-                            className="w-4 h-4 accent-purple-500 cursor-pointer"
-                        />
-
-                        <span className="text-sm text-gray-500 dark:text-gray-400">
-                            Agregar la misma tarea varios dias
-                        </span>
-                    </div>
-
                 </div>
-                <div className={`flex-1 overflow-y-auto transition-[max-height,opacity,padding] duration-500 ease-in-out
-                        ${repeatTask ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"}`}>
-                    <div className="grid sm:grid-cols-[130px_1fr] gap-x-4 gap-y-3 items-center mt-3">
-                        <label className="text-sm sm:text-base font-medium text-gray-600 dark:text-gray-400">Dias</label>
-                        <div className="flex gap-2 px-1 py-1">
-                            {days.map((day, i) => {
-                                const dayNumber = i + 1
-                                return (
-                                    <button
-                                        key={i}
-                                        onClick={() => toggleDay(dayNumber)}
-                                        className={`h-8 w-8 sm:h-9 sm:w-9 rounded-full text-xs sm:text-base font-medium border border-gray-300 dark:border-zinc-600 transition-all duration-200
-                                        ${selectedDays.includes(dayNumber)
-                                                ? "bg-blue-500 dark:bg-indigo-700  text-white scale-110"
-                                                : "bg-gray-200 dark:bg-zinc-600 text-gray-600 dark:text-white hover:bg-gray-300 dark:hover:bg-zinc-600/50"
-                                            }
-                                        `}
-                                    >
-                                        {day}
-                                    </button>
 
-                                )
-                            })}
-                        </div>
-
-                        <label className="text-sm sm:text-base font-medium text-gray-600 dark:text-gray-400">Finaliza</label>
-                        <input
-                            type="date"
-                            value={endDate}
-                            onChange={e => setEndDate(e.target.value)}
-                            className="w-full mt-1 border border-gray-400 dark:border-zinc-600 rounded px-2 py-2 text-sm focus:outline-none focus:border-zinc-500"
-                        />
-                    </div>
-                </div>
                 <div className="flex justify-between mt-3">
-
                     <button
                         type="button"
-                        onClick={handleAdd}
+                        onClick={handleEdit}
                         disabled={loading}
                         className="flex items-center gap-2 border border-gray-300 dark:border-zinc-600 rounded-lg px-4 py-2
                         hover:bg-gray-100 dark:hover:bg-zinc-700  transition-all duration-300 cursor-pointer"

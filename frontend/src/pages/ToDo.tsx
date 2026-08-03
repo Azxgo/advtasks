@@ -17,12 +17,13 @@ import { apiClient } from "../config/apiClient";
 import type { TotalStatsAttributes } from "../types/Stats";
 import { useStatsContext } from "../context/StatsContext";
 import { useTasksContext } from "../context/TasksContext";
+import { EditTaskModal } from "../components/tasks/EditTaskModal";
 
 export default function ToDo() {
     const [currentDate, setCurrentDate] = useState(new Date())
     const { tasks, setTasks, updateTask } = useTasksContext();
     const { toggleCompleted, changeDificult, changeStatus, changeAtribute,
-        changeName, saveTime, handleAddTask, handleDeleteTask, addSubTask,
+        changeName, saveTime, handleAddTask, handleDeleteTask, handleUpdateTask, addSubTask,
         updateSubTask, deleteSubTask, reOrderTasks, duplicateTask,
         saveAutomation, deleteAutomation } = useTasksActions(updateTask, setTasks)
     const { calendarMonth, setCalendarMonth, startOfWeek, weekDays, calendarDays } = useCalendar({ currentDate })
@@ -34,7 +35,7 @@ export default function ToDo() {
 
     const [addModalOpen, setAddModalOpen] = useState(false)
 
-    const [modalType, setModalType] = useState<"automate" | "reschedule" | null>(null)
+    const [modalType, setModalType] = useState<"automate" | "reschedule" | "edit" | null>(null)
     const [selectedTask, setSelectedTask] = useState<TaskType | null>(null)
 
     const [loading, setLoading] = useState(false)
@@ -64,6 +65,11 @@ export default function ToDo() {
     const openRescheduleModal = (task: TaskType) => {
         setSelectedTask(task)
         setModalType("reschedule")
+    }
+
+    const openEditModal = (task: TaskType) => {
+        setSelectedTask(task)
+        setModalType("edit")
     }
 
     useEffect(() => {
@@ -383,8 +389,8 @@ export default function ToDo() {
                         onClick={() => handleOrderTasks()}
                         className="flex items-center gap-2 border border-gray-300 dark:border-zinc-600 rounded-lg p-2
                         hover:bg-gray-100 dark:hover:bg-zinc-700 transition-all duration-300 cursor-pointer">
-                        <FaSort color={"gray"} size={22} />
-                        <span className="select-none">Ordenar</span>
+                        <FaSort color={"gray"} className="size-4 sm:size-6" />
+                        <span className="text-[10px] sm:text-base select-none">Ordenar</span>
                     </button>
 
                     <button
@@ -392,8 +398,8 @@ export default function ToDo() {
                         className="flex items-center gap-2 border border-gray-300 dark:border-zinc-600 rounded-lg p-2
                         hover:bg-gray-100 dark:hover:bg-zinc-700  transition-all duration-300 cursor-pointer"
                     >
-                        <FaPlus color={"gray"} size={22} />
-                        <span className="select-none">Crear Tarea</span>
+                        <FaPlus color={"gray"} className="size-4 sm:size-6" />
+                        <span className="text-[10px] sm:text-base select-none">Crear Tarea</span>
                     </button>
 
                 </div>
@@ -402,7 +408,7 @@ export default function ToDo() {
                     {loading ? (
                         <div className="flex px-4 py-3 select-none
                         bg-gray-100 hover:bg-gray-50 dark:bg-zinc-700/20 dark:hover:bg-zinc-600 justify-center transition gap-2 w-full items-center">
-                            <h1 className="italic text-gray-400">Cargando...</h1>
+                            <h1 className="italic text-[10px] sm:text-base text-gray-400">Cargando...</h1>
                         </div>
                     ) : tasks.length > 0 ? (
                         [...tasks]
@@ -421,6 +427,7 @@ export default function ToDo() {
                                     saveTime={saveTime}
                                     onAutomate={openAutomateModal}
                                     onReschedule={openRescheduleModal}
+                                    onEdit={openEditModal}
                                     onDelete={handleDeleteTask}
                                     onDuplicate={duplicateTask}
                                     onAddSubTask={addSubTask}
@@ -431,7 +438,7 @@ export default function ToDo() {
                     ) : (
                         <div className="flex px-4 py-3 select-none
                         bg-gray-100 hover:bg-gray-50 dark:bg-zinc-700/20 dark:hover:bg-zinc-600 justify-center transition gap-2 w-full items-center">
-                            <h1 className="italic text-gray-400">No hay tareas para este dia</h1>
+                            <h1 className="italic text-[10px] sm:text-base text-gray-400">No hay tareas para este dia</h1>
                         </div>
                     )}
                 </div>
@@ -440,48 +447,49 @@ export default function ToDo() {
                         onClick={() => handleNewTask()}
                         className="flex items-center gap-2 border border-gray-300 dark:border-zinc-600 rounded-lg p-2
                          hover:bg-gray-100 dark:hover:bg-zinc-700 transition-all duration-300 cursor-pointer">
-                        <FaPlus color={"gray"} size={22} />
+                        <FaPlus color={"gray"} className="size-4 sm:size-6" />
                     </button>
 
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 w-full m-0 gap-4 select-none">
-                    <div className="flex items-center gap-5 px-4 py-2 rounded-xl 
+                <div className="grid grid-cols-2 md:grid-cols-3 w-full m-0 gap-2 sm:gap-4 select-none">
+                    <div className="col-span-2 md:col-span-1 flex items-center gap-2 sm:gap-5 px-4 py-2 rounded-xl 
                         bg-gray-100 border border-gray-300 
                         dark:border-zinc-600 dark:bg-zinc-700/20"
                     >
-                        <p className="text-gray-400">Completados del dia :</p>
-                        <h2 className="text-xl font-bold m-0 ">{completedTasks}/{totalTasks}</h2>
+                        <p className="text-[10px] sm:text-base text-gray-400">Completados del dia :</p>
+                        <h2 className="text-[13px] sm:text-xl font-bold m-0 ">{completedTasks}/{totalTasks}</h2>
                     </div>
-                    <div className="flex items-center gap-5 m-0 px-4 py-2 rounded-xl 
+                    <div className="flex items-center gap-2 sm:gap-5 m-0 px-4 py-2 rounded-xl 
                         bg-gray-100 border border-gray-300 
                         dark:border-zinc-600 dark:bg-zinc-700/20"
                     >
-                        <p className="text-gray-400">Puntaje del dia :</p>
-                        <h2 className="text-xl font-bold m-0"> {dailyScore}</h2>
+                        <p className="text-[10px] sm:text-base text-gray-400">Puntaje del dia :</p>
+                        <h2 className="text-[13px] sm:text-xl font-bold m-0"> {dailyScore}</h2>
                     </div>
-                    <div className="flex items-center gap-5 px-4 py-2 m-0 rounded-xl 
+                    <div className="flex items-center gap-2 sm:gap-5 px-4 py-2 m-0 rounded-xl 
                         bg-gray-100 border border-gray-300 
                         dark:border-zinc-600 dark:bg-zinc-700/20"
                     >
-                        <p className="text-gray-400">Puntaje Semanal :</p>
-                        <h2 className="text-xl font-bold m-0">{weeklyScore}</h2>
+                        <p className="text-[10px] sm:text-base text-gray-400">Puntaje Semanal :</p>
+                        <h2 className="text-[13px] sm:text-xl font-bold m-0">{weeklyScore}</h2>
                     </div>
                 </div>
-                <div className="grid grid-cols-5 gap-8">
-                    {allAttributes.map((attr) => {
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 sm:gap-8 items-center justify-center">
+                    {allAttributes.map((attr, index) => {
                         const Icon = attributeIcons[attr];
                         const value = totalStatsForDisplay[attr];
                         const percentage = Math.min((value / 100) * 100, 100);
 
                         return (
-                            <div key={attr} className="w-full flex gap-3 items-center">
+                            <div key={attr} className={`flex gap-3 items-center
+                             ${index === 4 ? "col-span-2 md:col-span-1 justify-self-center w-1/2 md:w-full" : ""}`}>
                                 <AtributeToolTip text={attr}>
                                     <Icon
-                                        className="text-indigo-500 dark:text-indigo-700 scale-110 drop-shadow-lg"
+                                        className="size-5 sm:size-8 text-indigo-500 dark:text-indigo-700 scale-110 drop-shadow-lg"
                                         size={38}
                                     />
                                 </AtributeToolTip>
-                                <div className="w-full bg-gray-300 dark:bg-zinc-600 rounded-full h-5 overflow-hidden">
+                                <div className="w-full bg-gray-300 dark:bg-zinc-600 rounded-full h-3 sm:h-5 overflow-hidden">
                                     <div
                                         className="bg-indigo-500 dark:bg-indigo-700 h-full rounded-full transition-all duration-500"
                                         style={{ width: `${percentage}%` }}
@@ -533,6 +541,16 @@ export default function ToDo() {
                         task={selectedTask}
                         setTasks={setTasks}
                         onClose={() => setModalType(null)}
+                    />
+                )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+                {modalType === "edit" && selectedTask && (
+                    <EditTaskModal
+                        task={selectedTask}
+                        onClose={() => setModalType(null)}
+                        onEdit={handleUpdateTask}
                     />
                 )}
             </AnimatePresence>

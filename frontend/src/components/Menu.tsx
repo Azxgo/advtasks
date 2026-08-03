@@ -146,7 +146,7 @@ export function Menu({ open, onClose, children, anchorRef, position = "right", o
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: -4 }}
                     transition={{ duration: 0.15, ease: "easeOut" }}
-                    className={`absolute top-0 z-50 min-w-[180px] 
+                    className={`absolute top-0 z-50 min-w-[150px] sm:min-w-[180px] 
                     border-[1.5px] 
                     shadow-[0_10px_30px_rgba(0,0,0,0.12)]
                     rounded-lg bg-white dark:bg-zinc-800 border-gray-300 dark:border-zinc-600 

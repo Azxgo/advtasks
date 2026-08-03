@@ -126,10 +126,10 @@ export function AutomateModal({ task, onClose, saveAutomation, deleteAutomation 
                 exit={{ scale: 0.8, opacity: 0 }}
                 transition={{ duration: 0.2 }}
                 onClick={(e) => e.stopPropagation()}
-                className="relative bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-xl p-6 min-w-[700px] shadow-lg "
+                className="relative bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-xl p-6 w-[90vw] sm:min-w-[700px] max-w-[800px] shadow-lg "
             >
                 <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-bold ">
+                    <h2 className="text-base sm:text-xl font-bold ">
                         Automatizar tarea
                     </h2>
 
@@ -140,8 +140,8 @@ export function AutomateModal({ task, onClose, saveAutomation, deleteAutomation 
                     </button>
                 </div>
 
-                <div className="grid grid-cols-[130px_1fr] gap-x-4 gap-y-3 items-center">
-                    <label className="font-medium text-gray-600 dark:text-gray-400">Dias </label>
+                <div className="grid sm:grid-cols-[130px_1fr] gap-x-4 gap-y-2 sm:gap-y-3 items-center">
+                    <label className="text-sm sm:text-base font-medium text-gray-600 dark:text-gray-400">Dias </label>
                     <div className="flex gap-2">
                         {days.map((day, i) => {
                             const dayNumber = i + 1
@@ -163,7 +163,7 @@ export function AutomateModal({ task, onClose, saveAutomation, deleteAutomation 
                         })}
                     </div>
 
-                    <label className="font-medium text-gray-600 dark:text-gray-400" >Comienza en</label>
+                    <label className="text-sm sm:text-base font-medium text-gray-600 dark:text-gray-400" >Comienza en</label>
                     <input
                         type="date"
                         value={startDate}
@@ -171,7 +171,7 @@ export function AutomateModal({ task, onClose, saveAutomation, deleteAutomation 
                         className="w-full mt-1 border border-gray-400 dark:border-zinc-600 rounded px-2 py-2 text-sm focus:outline-none focus:border-zinc-500"
                     />
 
-                    <label className="font-medium text-gray-600 dark:text-gray-400" >Termina en</label>
+                    <label className="text-sm sm:text-base font-medium text-gray-600 dark:text-gray-400" >Termina en</label>
                     <input
                         type="date"
                         value={endDate}
@@ -179,7 +179,7 @@ export function AutomateModal({ task, onClose, saveAutomation, deleteAutomation 
                         className="w-full mt-1 border border-gray-400 dark:border-zinc-600 rounded px-2 py-2 text-sm focus:outline-none focus:border-zinc-500"
                     />
 
-                    <label className="font-medium text-gray-600 dark:text-gray-400">Hora de creación</label>
+                    <label className="text-sm sm:text-base font-medium text-gray-600 dark:text-gray-400">Hora de creación</label>
                     <input
                         type="time"
                         value={time}
