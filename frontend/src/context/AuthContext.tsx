@@ -231,9 +231,89 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
+    const checkUser = async () => {
+
+        const token = localStorage.getItem("advTask_token");
+
+        if (!token) return;
+
+
+        const res = await apiClient("/api/auth/checkUser", {
+            method: "POST"
+        });
+
+
+        if (!res.ok) {
+
+            localStorage.removeItem("advTask_token");
+            localStorage.removeItem("advTask_token_refreshToken");
+
+            setUser(null);
+
+            navigate("/start", {
+                replace: true
+            });
+        }
+    }
+
+    const checkGuest = async () => {
+        const session_id = localStorage.getItem("guest_session_id");
+
+        if (!session_id) return;
+
+        const res = await apiClient("/api/auth/checkGuest", {
+            method: "POST",
+            body: JSON.stringify({ session_id })
+        });
+
+        if (!res.ok) {
+            localStorage.removeItem("guest_session_id");
+            localStorage.removeItem("guest_expires_at");
+
+            setIsGuest(false);
+            navigate("/start", { replace: true });
+        }
+    }
+
     useEffect(() => {
         getUserInfo()
     }, [])
+
+    useEffect(() => {
+        if (!isGuest) return;
+
+        checkGuest();
+
+        const interval = setInterval(() => {
+            checkGuest();
+        }, 60000);
+
+        return () => {
+            clearInterval(interval);
+        };
+
+    }, [isGuest]);
+
+    useEffect(() => {
+
+        if (!user) return;
+
+
+        checkUser();
+
+
+        const interval = setInterval(() => {
+            checkUser();
+        }, 60000);
+
+
+        return () => {
+            clearInterval(interval);
+        };
+
+
+    }, [user]);
+
 
     return (
         <AuthContext.Provider value={{ user, setUser, getUserInfo, register, login, logout, guest, quitGuest, isGuest, deleteUser, loading }}>

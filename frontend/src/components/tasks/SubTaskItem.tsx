@@ -3,6 +3,8 @@ import { FaTrash } from "react-icons/fa"
 import { useTimeDrag } from "../../hooks/useTimeDrag"
 import { statusMap, statusMini, statusStyles } from "../../utils/formatTodo"
 import type { SubTask, TaskItem } from "../../types/Tasks"
+import { GiBriefcase } from "react-icons/gi"
+import { AtributeToolTip } from "../ui/AttributeToolTip"
 
 type Props = {
     task: TaskItem
@@ -45,15 +47,15 @@ export function SubTaskItem({
 
     return (
         <div
-            className={`group/delete relative flex items-center w-full py-2 px-3 sm:px-4 justify-between  md:gap-3 transition-all duration-300
+            className={`group/delete relative flex items-center w-full py-2 px-3 sm:px-4 transition-all duration-300
                 ${subtask.status === "in-progress"
                     ? "bg-gray-200 hover:bg-gray-300 dark:bg-zinc-700 dark:hover:bg-zinc-600"
                     : "bg-gray-100 hover:bg-gray-300 dark:bg-zinc-700/20 dark:hover:bg-zinc-600"
                 }
             `}
         >
-            <div className="flex">
-                <div className="min-w-10 sm:w-12 relative flex items-center">
+            <div className="flex w-full">
+                <div className="min-w-10 sm:w-10 relative flex items-center">
 
                     {isLast ? (
                         <>
@@ -126,12 +128,12 @@ export function SubTaskItem({
                                 }
                             }}
                             autoFocus
-                            className="w-38 sm:w-56 md:w-66 lg:w-85 border rounded bg-transparent outline-none border-none text-[12px] sm:text-base"
+                            className="w-38 sm:w-56 md:w-46 tablet:w-67 lg:w-80  border rounded bg-transparent outline-none border-none text-[12px] sm:text-base"
                         />
                     ) : (
                         <h2
                             onClick={() => setEditing(true)}
-                            className="w-38 sm:w-56 md:w-66 lg:w-85 truncate select-none cursor-pointer min-h-[1em] text-[12px] sm:text-base"
+                            className="w-38 sm:w-56 md:w-46 tablet:w-67 lg:w-70  truncate select-none cursor-pointer min-h-[1em] text-[12px] sm:text-base"
                         >
                             {subtask.name}
                         </h2>
@@ -139,8 +141,8 @@ export function SubTaskItem({
                 </div>
             </div>
 
-            <div className="flex md:w-full items-center md:justify-between">
-                <div className="hidden md:flex items-center gap-2">
+            <div className="flex md:w-full items-center">
+                <div className="hidden md:flex w-full items-center justify-around gap-2">
                     <h1
                         onClick={() => {
                             if (subtask.completed) return
@@ -154,52 +156,70 @@ export function SubTaskItem({
                                 status: nextStatus
                             })
                         }}
-                        className={`flex px-3 py-1 font-semibold border select-none rounded-md w-30 justify-center
+                        className={`flex px-1 lg:px-3 py-1 font-semibold border select-none rounded-md lg:w-30 justify-center
                             transition-all duration-200
                             hover:scale-110 active:scale-95
+                            text-xs tablet:text-[10px] lg:text-base
                             ${statusStyles[subtask.status ?? "pending"]}
                         `}
                     >
                         {statusMap[subtask.status ?? "pending"]}
                     </h1>
-                </div>
-                <div className="flex">
-                    <div
-                        onClick={() => {
-                            if (subtask.completed) return
 
-                            const nextStatus =
-                                subtask.status === "pending"
-                                    ? "in-progress"
-                                    : "pending"
-
-                            updateSubTask(task._id, subtask._id, task.date, {
-                                status: nextStatus
-                            })
-
-                        }}
-                        className={`md:hidden rounded-md  text-[10px] mx-1 p-1 sm:text-base
-                                        ${statusStyles[subtask.status ?? "pending"]}
-                                        `}
+                    <h1
+                        className="text-white px-3 py-1 rounded-full font-bold invisible"
                     >
-                        {React.createElement(statusMini[subtask.status ?? "pending"], {
-                            className: "size-2 sm:size-5"
-                        })}
+                        1
+                    </h1>
+
+                    <div className="flex flex-wrap tablet:gap-2 lg:gap-4 invisible">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                            <AtributeToolTip key={i} text="">
+                                <GiBriefcase
+                                    className="tablet:text-2xl lg:text-3xl"
+                                />
+                            </AtributeToolTip>
+                        ))}
                     </div>
 
-                    <div
-                        onClick={() => deleteSubTask(task._id, subtask._id)}
-                        className="rounded-md flex items-center justify-center
+
+                </div>
+            </div>
+            <div className="md:hidden flex">
+                <div
+                    onClick={() => {
+                        if (subtask.completed) return
+
+                        const nextStatus =
+                            subtask.status === "pending"
+                                ? "in-progress"
+                                : "pending"
+
+                        updateSubTask(task._id, subtask._id, task.date, {
+                            status: nextStatus
+                        })
+
+                    }}
+                    className={`md:hidden rounded-md  text-[10px] mx-1 p-1 sm:text-base
+                                        ${statusStyles[subtask.status ?? "pending"]}
+                                        `}
+                >
+                    {React.createElement(statusMini[subtask.status ?? "pending"], {
+                        className: "size-2 sm:size-5"
+                    })}
+                </div>
+            </div>
+            <div
+                onClick={() => deleteSubTask(task._id, subtask._id)}
+                className="rounded-md flex items-center justify-center
                         bg-white/80 dark:bg-zinc-500 backdrop-blur 
                         border border-gray-200 dark:border-zinc-600 dark:text-white 
                         dark:hover:text-white hover:text-gray-900
                         shadow-sm text-gray-600 hover:text-gray-900
                         md:opacity-0  group-hover/delete:opacity-100
                         transition duration-400 p-1 md:p-2"
-                    >
-                        <FaTrash className="size-2 sm:size-5" />
-                    </div>
-                </div>
+            >
+                <FaTrash className="size-2 sm:size-5" />
             </div>
         </div>
     )

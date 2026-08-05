@@ -6,9 +6,7 @@ import Automation from "../models/automations.js"
 import DailyStat from "../models/dailyStats.js"
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
-
-const JWT_SECRET = "EPICPAPUS"
-const JWT_REFRESH_SECRET = "EPICPAPUS2"
+import { deleteGuestSessions } from "../utils/deleteGuestSessions.js"
 
 export const register = async (req, res) => {
     try {
@@ -40,16 +38,15 @@ export const register = async (req, res) => {
 
         const accessToken = jwt.sign(
             { id: user._id },
-            JWT_SECRET,
-            //CAMBIAR EN 15m
-            { expiresIn: "1m" }
+            process.env.JWT_SECRET,
+            { expiresIn: "1h" }
         )
 
         // token de refresh
         const refreshToken = jwt.sign(
             { id: user._id },
-            JWT_REFRESH_SECRET,
-            { expiresIn: "7d" }
+            process.env.JWT_REFRESH_SECRET,
+            { expiresIn: "1d" }
         )
 
         // bycript
@@ -87,15 +84,15 @@ export const login = async (req, res) => {
         // token de acceso
         const accessToken = jwt.sign(
             { id: user._id },
-            JWT_SECRET,
+            process.env.JWT_SECRET,
             //CAMBIAR EN 15m
-            { expiresIn: "1m" }
+            { expiresIn: "1h" }
         )
 
         // token de refresh
         const refreshToken = jwt.sign(
             { id: user._id },
-            JWT_REFRESH_SECRET,
+            process.env.JWT_REFRESH_SECRET,
             { expiresIn: "7d" }
         )
 
@@ -125,7 +122,7 @@ export const logout = async (req, res) => {
 
     try {
         // verifica el token
-        const payload = jwt.verify(refreshToken, JWT_REFRESH_SECRET)
+        const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET)
 
         const user = await User.findById(payload.id)
 
@@ -164,18 +161,49 @@ export const refresh = async (req, res) => {
 
     if (!user) return res.sendStatus(403)
 
-    jwt.verify(token, JWT_REFRESH_SECRET, (err, decoded) => {
+    jwt.verify(token, process.env.JWT_REFRESH_SECRET, (err, decoded) => {
         if (err) return res.sendStatus(403);
 
         const accessToken = jwt.sign(
             { id: user._id },
-            JWT_SECRET,
+            process.env.JWT_SECRET,
             { expiresIn: "15m" }
         )
 
         res.json({ accessToken, refreshToken })
     })
 }
+
+export const checkUser = async (req, res) => {
+    // saca el token de authorization del apiclient
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+        return res.status(401).json({ message: "Token denegado", valid: false });
+    }
+
+    try {
+        // detecta si el token esta expirado
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        return res.status(200).json({ valid: true });
+
+    } catch (err) {
+        // pone el refresh token en null en la base de datos
+        if (err.name === "TokenExpiredError") {
+            const decoded = jwt.decode(token);
+
+            const user = await User.findById(decoded.id);
+
+            if (user) {
+                user.refreshToken = null;
+                await user.save();
+            }
+        }
+
+        return res.status(401).json({ valid: false });
+    }
+};
 
 export const guest = async (req, res) => {
     const deviceId = req.headers["x-device-id"]
@@ -233,12 +261,28 @@ export const quitGuest = async (req, res) => {
         return res.status(204).json({ message: "Sesion no encontrada" })
     }
 
-    await Task.deleteMany({ userId: session._id });
-    await Automation.deleteMany({ userId: session._id });
-    await DailyStat.deleteMany({ userId: session._id });
-
-    await Adv_Guest_Session.findByIdAndDelete(session_id)
-
+    await deleteGuestSessions(session_id)
 
     return res.status(200).json({ message: "Sesion terminada" })
+}
+
+export const check = async (req, res) => {
+    const { session_id } = req.body
+
+    if (!session_id) {
+        return res.status(204).json({ message: "Sesion no encontrada" })
+    }
+    const session = await Adv_Guest_Session.findById(session_id)
+
+    if (!session) {
+        return res.status(204).json({ message: "Sesion no encontrada" })
+    }
+
+    if (session.expires_at <= new Date()) {
+        await deleteGuestSessions(session._id);
+
+        return res.status(401).json({ valid: false });
+    }
+
+    return res.status(200).json({ valid: true, expires_at: session.expires_at.getTime() });
 }

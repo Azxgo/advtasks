@@ -60,10 +60,10 @@ cron.schedule("* * * * *", async () => {
                 order: 0
             })
 
-            console.log("✅ Tarea creada automáticamente")
+            console.log("Tarea creada automáticamente")
         }
 
     } catch (err) {
-        console.error("❌ Error en cron:", err)
+        console.error(" Error en cron:", err)
     }
 })

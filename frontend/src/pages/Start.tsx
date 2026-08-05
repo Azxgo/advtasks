@@ -76,10 +76,10 @@ export default function Start() {
 
 
     return (
-        <div className="flex flex-col bg-gray-200/10 w-full justify-center items-center min-h-screen dark:text-white">
+        <div className="flex flex-col w-full justify-center items-center min-h-screen dark:text-white">
             <form
                 onSubmit={mode === "login" ? handleLogin : handleRegister}
-                className="flex flex-col p-4 w-full justify-center dark:bg-zinc-600/10 items-center border border-gray-300 max-w-[400px]
+                className="flex flex-col p-4 w-full justify-center dark:bg-zinc-600/10 items-center border border-gray-300 dark:border-zinc-600 max-w-[400px]
                 rounded-lg shadow-lg bg-white dark:bg-zinc-800">
                 <div className="flex flex-col gap-5">
                     <h1 className="font-karnivore text-3xl mb-3">AdvTasks</h1>
@@ -96,7 +96,6 @@ export default function Start() {
                         <div className="animate-spin border-2 border-zinc-400 border-t-transparent rounded-full w-4 h-4 mb-2"  />
 
                     </>
-
 
                 )}
 

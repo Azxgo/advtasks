@@ -26,8 +26,6 @@ export function Header({ }) {
     const { deleteAllTasksByUser } = useTasksActions(updateTask, setTasks)
     const { getUserInfo, logout, isGuest, quitGuest, deleteUser } = useAuthContext()
 
-    console.log(isGuest)
-
     const { dark, setDark } = useThemeContext()
 
     const [confirmModal, setConfirmModal] = useState<ConfirmState>({

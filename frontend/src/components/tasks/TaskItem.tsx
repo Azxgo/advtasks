@@ -117,13 +117,13 @@ export function TaskItem({ task, allAttributes, toggleCompleted, changeStatus, c
                                 }
                             }}
                             autoFocus
-                            className="w-40 sm:w-56 md:w-80 border rounded bg-transparent outline-none border-none text-[12px] sm:text-base"
+                            className="w-40 sm:w-56 tablet:w-67 lg:w-80 border rounded bg-transparent outline-none border-none text-[12px] sm:text-base"
                         />
                     )
                         : (
                             <h2
                                 onClick={() => setEditing(true)}
-                                className="w-40 sm:w-56 md:w-80 truncate select-none cursor-pointer min-h-[1em]
+                                className="w-40 sm:w-56 tablet:w-67 lg:w-80  truncate select-none cursor-pointer min-h-[1em]
                                 text-[12px] sm:text-base"
                             >
                                 {task.name}
@@ -149,9 +149,9 @@ export function TaskItem({ task, allAttributes, toggleCompleted, changeStatus, c
                                     changeStatus(task._id, task.date)
                                 }
                             }}
-                            className={`flex px-3 py-1  font-semibold border select-none rounded-md w-30 justify-center
+                            className={`flex px-1 lg:px-3 py-1 font-semibold border select-none rounded-md lg:w-30 justify-center
                                             transition-all duration-200
-                                            text-xs sm:text-base md:text-md
+                                            text-xs tablet:text-[10px] lg:text-base
                                             hover:scale-110  active:scale-95 
                                          ${statusStyles[task.status ?? "pending"]}`}>
                             {statusMap[task.status ?? "pending"]}
@@ -163,7 +163,7 @@ export function TaskItem({ task, allAttributes, toggleCompleted, changeStatus, c
                                             hover:scale-110 active:scale-95
                                         ${levelColors[task.level || 1]}`}>{task.level}
                         </h1>
-                        <div className="flex flex-wrap gap-4">
+                        <div className="flex flex-wrap tablet:gap-2 lg:gap-4">
                             {allAttributes.map((attr) => {
                                 const Icon = attributeIcons[attr];
                                 const active = task.attributes?.includes(attr);
@@ -173,7 +173,7 @@ export function TaskItem({ task, allAttributes, toggleCompleted, changeStatus, c
                                         <Icon
                                             onClick={() => changeAtribute(task._id, attr, task.date)}
                                             className={`
-                                                  text-3xl cursor-pointer transition-all duration-200
+                                                  tablet:text-2xl lg:text-3xl cursor-pointer transition-all duration-200
                                                   ${active
                                                     ? "text-indigo-500 scale-110 drop-shadow-lg"
                                                     : "text-gray-400 opacity-40 hover:opacity-100"}

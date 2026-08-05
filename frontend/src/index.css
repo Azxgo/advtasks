@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+@theme {
+  --breakpoint-tablet: 764px;
+}
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 @font-face {
