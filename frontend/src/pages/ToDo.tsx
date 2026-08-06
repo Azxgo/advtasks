@@ -129,7 +129,6 @@ export default function ToDo() {
         field: "hour" | "minute",
         value: number
     ) => {
-        console.log("changeTimeLocal", field, value);
         setTasks(prev =>
             prev.map(task =>
                 task._id === id
@@ -273,25 +272,28 @@ export default function ToDo() {
         },
         {} as TotalStatsAttributes
     )
+    // todo lo que sea start = new Date esta mal
+    const shouldActivate = (now: Date, taskDay: string, hour: number, minute: number, completed: boolean, status: string) => {
+        const [year, month, day] = taskDay.split("-").map(Number);
 
-    const shouldActivate = (now: Date, taskDate: Date, hour: number, minute: number, completed: boolean, status: string) => {
-        const start = new Date(taskDate)
-        start.setHours(hour, minute, 0, 0)
+        const start = new Date(year, month - 1, day, hour, minute, 0, 0);
 
         return (
-            now >= start && !completed && status === "pending"
-        )
-    }
+            now >= start &&
+            !completed &&
+            status === "pending"
+        );
+    };
 
-    const isPreviousDay = (taskDate: Date, now: Date) => {
-        const taskDay = new Date(taskDate)
-        taskDay.setHours(0, 0, 0, 0)
+    const isPreviousDay = (taskDate: Date | string, now: Date) => {
+        const taskDay = typeof taskDate === "string"
+            ? taskDate.split("T")[0]
+            : taskDate.toLocaleDateString("sv-SE");
 
-        const today = new Date(now)
-        today.setHours(0, 0, 0, 0)
+        const today = now.toLocaleDateString("sv-SE");
 
-        return taskDay < today
-    }
+        return taskDay < today;
+    };
 
     useEffect(() => {
         let interval: ReturnType<typeof setInterval>
@@ -315,32 +317,34 @@ export default function ToDo() {
 
         const updateTasksStatus = () => {
             const now = new Date()
+            const today = now.toLocaleDateString("sv-SE")
 
             setTasks(prev =>
                 prev.map(task => {
-                    const taskDate = new Date(task.date)
+                    const taskDay = typeof task.date === "string"
+                        ? task.date.split("T")[0]
+                        : task.date.toLocaleDateString("sv-SE")
 
-                    const sameDay =
-                        taskDate.toDateString() === now.toDateString()
+                    const sameDay = taskDay === today
 
                     let status = task.status
 
-                    if (isPreviousDay(taskDate, now) && !task.completed && ["pending", "in-progress"].includes(task.status)) {
+                    if (isPreviousDay(taskDay, now) && !task.completed && ["pending", "in-progress"].includes(task.status)) {
                         status = "missed"
-                    } else if (sameDay && shouldActivate(now, taskDate, task.hour, task.minute, task.completed, task.status)) {
+                    } else if (sameDay && shouldActivate(now, taskDay, task.hour, task.minute, task.completed, task.status)) {
                         status = "in-progress"
                     }
 
                     const updateSubTasks: SubTask[] = task.subTasks.map((subTask: SubTask) => {
 
-                        if (isPreviousDay(taskDate, now) && !subTask.completed && ["pending", "in-progress"].includes(subTask.status)) {
+                        if (isPreviousDay(taskDay, now) && !subTask.completed && ["pending", "in-progress"].includes(subTask.status)) {
                             return {
                                 ...subTask,
                                 status: "missed"
                             }
                         }
 
-                        if (sameDay && shouldActivate(now, taskDate, subTask.hour, subTask.minute, subTask.completed, subTask.status)) {
+                        if (sameDay && shouldActivate(now, taskDay, subTask.hour, subTask.minute, subTask.completed, subTask.status)) {
                             return {
                                 ...subTask,
                                 status: "in-progress"

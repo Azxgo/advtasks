@@ -10,6 +10,7 @@ export function useTasksActions(
 
 
     const isToday = (dateValue: Date | string) => {
+        // Las fechas se cambiaron por que estaban hechas en chile, ahora es UTC
         const today = new Date().toLocaleDateString("sv-SE");
 
         const date = typeof dateValue === "string"
@@ -98,7 +99,6 @@ export function useTasksActions(
     }
 
     const handleAddTask = async (task: Partial<TaskItem>, currentDate?: Date) => {
-
         const res = await apiClient(`${BASE_URL}/add`, {
             method: "POST",
             body: JSON.stringify(task),
