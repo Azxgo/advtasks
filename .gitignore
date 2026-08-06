@@ -5,6 +5,7 @@
 !frontend/
 !backend/
 !.gitignore
+!vercel.json
 
 !README.md
 
