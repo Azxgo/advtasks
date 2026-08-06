@@ -128,16 +128,10 @@ export function useTasksActions(
         }
 
         if (currentDate) {
+            const taskDay = data.date.split("T")[0];
             const today = currentDate.toLocaleDateString("sv-SE");
 
-            console.log("data.date:", data.date);
-            console.log("today:", today);
-            console.log("comparacion:", data.date === today);
-
-            const sameDay =
-                data.date === currentDate.toLocaleDateString("sv-SE");
-
-            if (sameDay) {
+            if (taskDay === today) {
                 console.log("HACIENDO SETTASKS");
                 setTasks(prev => [...prev, data]);
             }
