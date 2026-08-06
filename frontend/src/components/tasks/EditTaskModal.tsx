@@ -61,6 +61,7 @@ export function EditTaskModal({ task, onClose, onEdit }: Props) {
         if (!task) return;
 
         try {
+            setLoading(true)
             const [hour, minute] = time
                 ? time.split(":").map(Number)
                 : [0, 0];
@@ -76,6 +77,8 @@ export function EditTaskModal({ task, onClose, onEdit }: Props) {
             onClose();
         } catch (e) {
             console.error(e);
+        } finally {
+            setLoading(false)
         }
     };
 

@@ -20,6 +20,7 @@ backend/.env
 frontend/node_modules/
 frontend/src/components/shelf/
 frontend/src/components/toolbar/
+frontend/src/pages/Shelf.tsx
 
 __pycache__/
 *.pyc
