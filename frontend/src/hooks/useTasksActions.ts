@@ -134,7 +134,7 @@ export function useTasksActions(
         console.log("sameDay:", taskDate.toDateString() === currentDate.toDateString());
 
         const sameDay =
-            taskDate.toDateString() === currentDate.toDateString();
+            data.date === currentDate.toLocaleDateString("sv-SE");
 
         if (sameDay) {
             console.log("HACIENDO SETTASKS");
