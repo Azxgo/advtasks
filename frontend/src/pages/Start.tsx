@@ -77,6 +77,9 @@ export default function Start() {
 
     return (
         <div className="flex flex-col w-full justify-center items-center min-h-screen dark:text-white">
+            <div className="absolute top-15 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-600 rounded-lg p-2 dark:text-white shadow-lg">
+                El backend utiliza un servicio gratuito. La primera carga puede tardar aproximadamente 30 segundos.
+            </div>
             <form
                 onSubmit={mode === "login" ? handleLogin : handleRegister}
                 className="flex flex-col p-4 w-full justify-center dark:bg-zinc-600/10 items-center border border-gray-300 dark:border-zinc-600 max-w-[400px]
@@ -93,7 +96,7 @@ export default function Start() {
 
                 {loading && (
                     <>
-                        <div className="animate-spin border-2 border-zinc-400 border-t-transparent rounded-full w-4 h-4 mb-2"  />
+                        <div className="animate-spin border-2 border-zinc-400 border-t-transparent rounded-full w-4 h-4 mb-2" />
 
                     </>
 

@@ -134,15 +134,14 @@ export const addDailyStats = async () => {
 
     for (const user of users) {
 
-        console.log("Procesando:", user.name)
 
-        // DESACTIVADO PARA PRUEBAS
-        // if (
-        //     user.lastUpdateDate &&
-        //     user.lastUpdateDate.getTime() === today.getTime()
-        // ) {
-        //     continue
-        // }
+         
+         if (
+             user.lastUpdateDate &&
+             user.lastUpdateDate.getTime() === today.getTime()
+         ) {
+             continue
+         }
 
         const start = new Date(today)
         start.setDate(start.getDate() - 1)
