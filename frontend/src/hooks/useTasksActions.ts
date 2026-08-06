@@ -10,14 +10,14 @@ export function useTasksActions(
 
 
     const isToday = (dateValue: Date | string) => {
-        const today = new Date()
-        today.setHours(0, 0, 0, 0)
+        const today = new Date().toLocaleDateString("sv-SE");
 
-        const date = new Date(dateValue)
-        today.setHours(0, 0, 0, 0)
+        const date = typeof dateValue === "string"
+            ? dateValue.split("T")[0]
+            : dateValue.toLocaleDateString("sv-SE");
 
-        return date.getTime() === today.getTime()
-    }
+        return date === today;
+    };
 
 
     const handle = async (
