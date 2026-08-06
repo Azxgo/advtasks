@@ -99,42 +99,49 @@ export function useTasksActions(
 
     const handleAddTask = async (task: Partial<TaskItem>, currentDate?: Date) => {
 
-        const res = await apiClient(`${BASE_URL}/add`, {
-            method: "POST",
-            body: JSON.stringify(task),
-        });
+    const res = await apiClient(`${BASE_URL}/add`, {
+        method: "POST",
+        body: JSON.stringify(task),
+    });
 
-        const data = await res.json();
+    const data = await res.json();
 
-        if (Array.isArray(data)) {
+    console.log("DATA:", data);
 
-            if (currentDate) {
-                const filtered = data.filter((task) => {
-                    const taskDate = new Date(task.date)
-
-                    return (
-                        taskDate.toDateString() ===
-                        currentDate.toDateString()
-                    )
-                })
-
-                setTasks(prev => [...prev, ...filtered])
-            }
-
-            return
-        }
+    if (Array.isArray(data)) {
+        console.log("ES ARRAY");
 
         if (currentDate) {
-            const taskDate = new Date(data.date)
+            const filtered = data.filter((task) => {
+                const taskDate = new Date(task.date);
 
-            const sameDay =
-                taskDate.toDateString() === currentDate.toDateString()
+                return taskDate.toDateString() === currentDate.toDateString();
+            });
 
-            if (sameDay) {
-                setTasks(prev => [...prev, data])
-            }
+            console.log("FILTERED:", filtered);
+
+            setTasks(prev => [...prev, ...filtered]);
+        }
+
+        return;
+    }
+
+    if (currentDate) {
+        const taskDate = new Date(data.date);
+
+        console.log("taskDate:", taskDate);
+        console.log("currentDate:", currentDate);
+        console.log("sameDay:", taskDate.toDateString() === currentDate.toDateString());
+
+        const sameDay =
+            taskDate.toDateString() === currentDate.toDateString();
+
+        if (sameDay) {
+            console.log("HACIENDO SETTASKS");
+            setTasks(prev => [...prev, data]);
         }
     }
+}
 
     const handleUpdateTask = async (
         id: string,
