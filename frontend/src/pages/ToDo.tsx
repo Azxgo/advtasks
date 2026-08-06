@@ -321,9 +321,7 @@ export default function ToDo() {
 
             setTasks(prev =>
                 prev.map(task => {
-                    const taskDay = typeof task.date === "string"
-                        ? task.date.split("T")[0]
-                        : task.date.toLocaleDateString("sv-SE")
+                    const taskDay = task.date.split("T")[0]
 
                     const sameDay = taskDay === today
 
