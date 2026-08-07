@@ -7,10 +7,7 @@ import { connectDB } from "./config/db.js"
 import { taskRouter } from "./routes/tasks.js"
 import { calculateMissingDays } from './controllers/dailyStats.js'
 import { dailyStatsRouter } from "./routes/dailyStats.js"
-import "./cron/cronTasks.js"
-import "./cron/cronStats.js"
-import "./cron/cronAutomation.js"
-import "./cron/cronSession.js"
+
 import { authRouter } from "./routes/auth.js"
 import { userRouter } from "./routes/users.js"
 import { automationRouter } from "./routes/automations.js"
@@ -53,5 +50,6 @@ app.listen(port, async () => {
     console.log(`server listening on port http://localhost:${port}`)
 
     await calculateMissingDays()
-})
+})gi
 
+export default app

@@ -1,18 +1,36 @@
 {
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/backend/src/app.js"
+    "services": {
+        "frontend": {
+            "root": "frontend",
+            "framework": "vite"
+        },
+        "backend": {
+            "root": "backend",
+            "framework": "express",
+            "runtime": "node",
+            "entrypoint": "src/app.js"
+        }
     },
-    {
-      "source": "/(.*)",
-      "destination": "/frontend/$1"
-    }
-  ],
-  "crons": [
-    {
-      "path": "/api/cron/test",
-      "schedule": "* * * * *"
-    }
-  ]
+    "rewrites": [
+        {
+            "source": "/api(/.*)?",
+            "destination": {
+                "type": "service",
+                "service": "backend"
+            }
+        },
+        {
+            "source": "/(.*)",
+            "destination": {
+                "type": "service",
+                "service": "frontend"
+            }
+        }
+    ],
+    "crons": [
+        {
+            "path": "/api/cron/test",
+            "schedule": "* * * * *"
+        }
+    ]
 }
