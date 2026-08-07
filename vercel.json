@@ -1,36 +1,32 @@
 {
-    "services": {
-        "frontend": {
-            "root": "frontend",
-            "framework": "vite"
-        },
-        "backend": {
-            "root": "backend",
-            "framework": "express",
-            "runtime": "node",
-            "entrypoint": "src/app.js"
-        }
+  "version": 2,
+  "builds": [
+    {
+      "src": "backend/src/app.js",
+      "use": "@vercel/node"
     },
-    "rewrites": [
-        {
-            "source": "/api(/.*)?",
-            "destination": {
-                "type": "service",
-                "service": "backend"
-            }
-        },
-        {
-            "source": "/(.*)",
-            "destination": {
-                "type": "service",
-                "service": "frontend"
-            }
-        }
-    ],
-    "crons": [
-        {
-            "path": "/api/cron/test",
-            "schedule": "* * * * *"
-        }
-    ]
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "backend/src/app.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "frontend/$1"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/test",
+      "schedule": "* * * * *"
+    }
+  ]
 }
