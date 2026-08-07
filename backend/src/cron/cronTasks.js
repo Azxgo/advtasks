@@ -2,7 +2,11 @@ import cron from "node-cron"
 import Task from "../models/tasks.js"
 
 cron.schedule("* * * * *", async () => {
-    const now = new Date()
+    const now = new Date(
+        new Date().toLocaleString("en-US", {
+            timeZone: "America/Santiago"
+        })
+    )
 
     const currentHour = now.getHours()
     const currentMinute = now.getMinutes()
