@@ -33,12 +33,6 @@ app.use("/api/auth", authRouter)
 app.use("/api/users", userRouter)
 app.use("/api/automation", automationRouter)
 
-app.listen(port, async () => {
-    console.log(`server listening on port http://localhost:${port}`)
-
-    await calculateMissingDays()
-})
-
 app.get("/api/cron/test", async (req, res) => {
     console.log("CRON TEST EJECUTADO", new Date());
 
@@ -47,4 +41,11 @@ app.get("/api/cron/test", async (req, res) => {
         date: new Date()
     });
 });
+
+
+app.listen(port, async () => {
+    console.log(`server listening on port http://localhost:${port}`)
+
+    await calculateMissingDays()
+})
 
