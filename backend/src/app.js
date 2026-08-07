@@ -50,6 +50,6 @@ app.listen(port, async () => {
     console.log(`server listening on port http://localhost:${port}`)
 
     await calculateMissingDays()
-})gi
+})
 
 export default app
