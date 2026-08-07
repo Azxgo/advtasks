@@ -18,6 +18,29 @@ cron.schedule("* * * * *", async () => {
     endOfDay.setHours(23, 59, 59, 999)
 
     try {
+        console.log({
+            now,
+            currentHour,
+            currentMinute,
+            startOfDay,
+            endOfDay
+        });
+        const tasks = await Task.find({
+            status: "pending",
+            completed: false,
+            date: {
+                $gte: startOfDay,
+                $lte: endOfDay
+            }
+        });
+
+        console.log("Coinciden por fecha:", tasks.length);
+        console.log(tasks.map(t => ({
+            date: t.date,
+            hour: t.hour,
+            minute: t.minute,
+            status: t.status
+        })));
         const tasksResult = await Task.updateMany(
             {
                 // Condiciones
