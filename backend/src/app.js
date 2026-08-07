@@ -27,6 +27,11 @@ app.use(cors({
 }));
 app.use(express.json())
 
+app.get("*", (req, res, next) => {
+    console.log("LLEGÓ A EXPRESS:", req.method, req.url);
+    next();
+});
+
 app.use("/api/item", itemRouter)
 app.use("/api/tasks", taskRouter)
 app.use("/api/dailystats", dailyStatsRouter)
