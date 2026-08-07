@@ -21,7 +21,7 @@ const app = express()
 const port = process.env.PORT ?? 3000
 
 app.use(cors({
-    origin: ["http://localhost:5173" , "https://advtasks.vercel.app"],
+    origin: ["http://localhost:5173", "https://advtasks.vercel.app"],
     credentials: true,
 }));
 app.use(express.json())
@@ -38,4 +38,13 @@ app.listen(port, async () => {
 
     await calculateMissingDays()
 })
+
+app.get("/api/cron/test", async (req, res) => {
+    console.log("CRON TEST EJECUTADO", new Date());
+
+    res.json({
+        ok: true,
+        date: new Date()
+    });
+});
 
