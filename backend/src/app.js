@@ -1,3 +1,4 @@
+console.log("ESTE ES MI APP.JS NUEVO")
 import express from "express"
 import cors from "cors"
 import dotenv from "dotenv"
