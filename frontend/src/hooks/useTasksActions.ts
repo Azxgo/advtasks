@@ -10,14 +10,13 @@ export function useTasksActions(
 
 
     const isToday = (dateValue: Date | string) => {
-        // Las fechas se cambiaron por que estaban hechas en chile, ahora es UTC
         const today = new Date().toLocaleDateString("sv-SE");
 
         const date = typeof dateValue === "string"
             ? dateValue.split("T")[0]
             : dateValue.toLocaleDateString("sv-SE");
 
-        return date === today;
+        return date >= today;
     };
 
 
