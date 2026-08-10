@@ -10,14 +10,15 @@ export function useTasksActions(
 
 
     const isToday = (dateValue: Date | string) => {
-        const today = new Date()
-        today.setHours(0, 0, 0, 0)
+        // Las fechas se cambiaron por que estaban hechas en chile, ahora es UTC
+        const today = new Date().toLocaleDateString("sv-SE");
 
-        const date = new Date(dateValue)
-        today.setHours(0, 0, 0, 0)
+        const date = typeof dateValue === "string"
+            ? dateValue.split("T")[0]
+            : dateValue.toLocaleDateString("sv-SE");
 
-        return date.getTime() === today.getTime()
-    }
+        return date === today;
+    };
 
 
     const handle = async (
@@ -98,40 +99,41 @@ export function useTasksActions(
     }
 
     const handleAddTask = async (task: Partial<TaskItem>, currentDate?: Date) => {
-
         const res = await apiClient(`${BASE_URL}/add`, {
             method: "POST",
             body: JSON.stringify(task),
         });
 
         const data = await res.json();
+        console.log("CAMBIO LOL")
+
+        console.log("DATA:", data);
 
         if (Array.isArray(data)) {
+            console.log("ES ARRAY");
 
             if (currentDate) {
                 const filtered = data.filter((task) => {
-                    const taskDate = new Date(task.date)
+                    const taskDate = new Date(task.date);
 
-                    return (
-                        taskDate.toDateString() ===
-                        currentDate.toDateString()
-                    )
-                })
+                    return taskDate.toDateString() === currentDate.toDateString();
+                });
 
-                setTasks(prev => [...prev, ...filtered])
+                console.log("FILTERED:", filtered);
+
+                setTasks(prev => [...prev, ...filtered]);
             }
 
-            return
+            return;
         }
 
         if (currentDate) {
-            const taskDate = new Date(data.date)
+            const taskDay = data.date.split("T")[0];
+            const today = currentDate.toLocaleDateString("sv-SE");
 
-            const sameDay =
-                taskDate.toDateString() === currentDate.toDateString()
-
-            if (sameDay) {
-                setTasks(prev => [...prev, data])
+            if (taskDay === today) {
+                console.log("HACIENDO SETTASKS");
+                setTasks(prev => [...prev, data]);
             }
         }
     }

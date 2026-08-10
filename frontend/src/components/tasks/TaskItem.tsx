@@ -39,8 +39,6 @@ export function TaskItem({ task, allAttributes, toggleCompleted, changeStatus, c
     const [editing, setEditing] = useState(false);
     const [name, setName] = useState(task.name)
 
-    const [expanded, setExpanded] = useState(false)
-
     const [confirmModalOpen, setConfirmModalOpen] = useState(false);
 
     const inputRef = useRef<HTMLInputElement>(null);

@@ -71,7 +71,7 @@ export function AddTaskModal({ onClose, onAdd }: Props) {
                     return;
                 }
             }
-
+            setLoading(true)
             const [hour, minute] = time
                 ? time.split(":").map(Number)
                 : [0, 0]
@@ -94,6 +94,8 @@ export function AddTaskModal({ onClose, onAdd }: Props) {
             onClose()
         } catch (e) {
             console.error(e)
+        } finally {
+            setLoading(false)
         }
     }
 
