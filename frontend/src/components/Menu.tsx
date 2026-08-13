@@ -51,7 +51,10 @@ export function Menu({ open, onClose, children, anchorRef, position = "right", o
         let x = 0
         let y = 0
 
-        const SCREEN_PADDING = 16;
+        const SCROLLBAR_WIDTH =
+            window.innerWidth - document.documentElement.clientWidth;
+            
+        const SCREEN_PADDING = 16 + SCROLLBAR_WIDTH;
 
         switch (position) {
             case "right":
@@ -90,18 +93,30 @@ export function Menu({ open, onClose, children, anchorRef, position = "right", o
                 break
 
             case "bottom":
-                x = btn.left
-                y = btn.bottom + offset
+                x = btn.left;
+                y = btn.bottom + offset;
 
-                if (x + menu.width > window.innerWidth - SCREEN_PADDING) {
-                    x = btn.right - menu.width
+                x = Math.max(
+                    16,
+                    Math.min(
+                        x,
+                        window.innerWidth - menu.width - SCREEN_PADDING
+                    )
+                );
+
+                if (y + menu.height > window.innerHeight - 16) {
+                    y = btn.top - menu.height - offset;
                 }
 
-                if (x < SCREEN_PADDING) {
-                    x = SCREEN_PADDING
-                }
+                y = Math.max(
+                    16,
+                    Math.min(
+                        y,
+                        window.innerHeight - menu.height - 16
+                    )
+                );
 
-                break
+                break;
 
             case "top":
                 x = btn.left + btn.width / 2 - menu.width / 2

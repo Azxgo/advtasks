@@ -67,7 +67,7 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
     try {
-        const { email, password } = req.body
+        const { email, password, timezone } = req.body
 
         const user = await User.findOne({ email })
 
@@ -79,6 +79,10 @@ export const login = async (req, res) => {
 
         if (!isMatch) {
             return res.status(400).json({ message: "Credenciales Incorrectas" })
+        }
+
+        if (timezone) {
+            user.timezone = timezone;
         }
 
         // token de acceso
@@ -106,6 +110,7 @@ export const login = async (req, res) => {
         res.json({
             accessToken,
             refreshToken,
+            timezone: user.timezone
         })
     } catch {
         return res.status(204).json({ message: "Error al registrar" });

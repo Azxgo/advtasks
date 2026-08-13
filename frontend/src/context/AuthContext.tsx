@@ -9,6 +9,7 @@ type User = {
     name: string
     level: number
     totalExp: number
+    timezone?: string
 }
 
 type AuthContextType = {
@@ -101,7 +102,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         try {
             const res = await apiClient(`/api/auth/login`, {
                 method: "POST",
-                body: JSON.stringify({ email, password })
+                body: JSON.stringify({
+                    email,
+                    password,
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                })
             })
 
             if (!res.ok) {

@@ -1,15 +1,36 @@
 import cron from "node-cron"
 import User from "../models/users.js"
+import { DateTime } from "luxon"
 import { addDailyStats } from "../controllers/users.js"
 import { calculateMissingDays } from "../controllers/dailyStats.js"
 
-cron.schedule("0 0 * * *", async () => {
+cron.schedule("* * * * *", async () => {
     console.log("Ejecutando cierre diario de stats...")
 
     try {
-        const users = await User.find()
+        const users = await User.find(
+            {},
+            {
+                _id: 1,
+                timezone: 1
+            }
+        )
 
         for (const user of users) {
+            const timezone = user.timezone
+
+            if (!timezone) continue
+
+            const now = DateTime.now().setZone(timezone)
+
+            if (now.hour !== 0 || now.minute !== 0) {
+                continue
+            }
+
+            console.log(
+                `[${timezone}] Cerrando día para usuario ${user._id}`
+            )
+
             await calculateMissingDays(user._id)
         }
         await addDailyStats()
@@ -19,6 +40,4 @@ cron.schedule("0 0 * * *", async () => {
         console.error(error.stack)
     }
 
-}, {
-    timezone: "America/Santiago"
 })

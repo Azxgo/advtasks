@@ -1,4 +1,4 @@
-import { FaEllipsisV, FaMoon, FaPoll, FaSignOutAlt, FaSun, FaSyncAlt, FaTrashAlt, FaUserSlash } from "react-icons/fa";
+import { FaEllipsisV, FaGlobe, FaMoon, FaPoll, FaSignOutAlt, FaSun, FaSyncAlt, FaTrashAlt, FaUserSlash } from "react-icons/fa";
 import { MenuButton } from "./menu/MenuButton";
 import { MenuRoot } from "./menu/MenuRoot";
 import { MenuContent } from "./menu/MenuContent";
@@ -11,6 +11,7 @@ import { useState } from "react";
 import { ConfirmModal } from "./ui/ConfirmModal";
 import { useThemeContext } from "../context/ThemeContext";
 import { useTasksContext } from "../context/TasksContext";
+import { useTimezoneContext } from "../context/TimezoneContext";
 
 type ConfirmState = {
     isOpen: boolean;
@@ -27,6 +28,7 @@ export function Header({ }) {
     const { getUserInfo, logout, isGuest, quitGuest, deleteUser } = useAuthContext()
 
     const { dark, setDark } = useThemeContext()
+    const { timezone, setTimezone, timezones } = useTimezoneContext()
 
     const [confirmModal, setConfirmModal] = useState<ConfirmState>({
         isOpen: false,
@@ -52,6 +54,20 @@ export function Header({ }) {
         })
 
         if (res.ok) {
+            await getUserInfo();
+        }
+    }
+
+    const changeTimezone = async (timezone:string) => {
+        const res = await apiClient(`/api/users/changeTimezone`, {
+            method: "PATCH",
+            body: JSON.stringify({
+                timezone
+            })
+        })
+
+        if (res.ok) {
+            setTimezone(timezone);
             await getUserInfo();
         }
     }
@@ -100,6 +116,24 @@ export function Header({ }) {
                                     </div>
                                 </div>
                             </div>
+                        </MenuItem>
+                        <MenuItem closeOnClick={false} className="flex flex-col py-2 gap-2 w-full items-center justify-center rounded-lg">
+                            <div className="flex w-full gap-2  items-center rounded-lg cursor-pointer">
+                                <FaGlobe color="gray" size={22} />
+                                <p className="text-md font-semibold">Zona Horaria</p>
+                            </div>
+
+                            <select
+                                value={timezone}
+                                onChange={(e) => changeTimezone(e.target.value)}
+                                className="bg-transparent border rounded-md max-w-50"
+                            >
+                                {timezones.map((tz) => (
+                                    <option key={tz} value={tz} className="dark:bg-zinc-800">
+                                        {tz}
+                                    </option>
+                                ))}
+                            </select>
                         </MenuItem>
                         <MenuItem
                             className="flex w-full gap-2 py-2 items-center rounded-lg cursor-pointer whitespace-nowrap"

@@ -1,116 +1,135 @@
 import cron from "node-cron"
+import { DateTime } from "luxon"
 import Task from "../models/tasks.js"
+import User from "../models/users.js"
 
 cron.schedule("* * * * *", async () => {
-    const now = new Date()
-
-    const currentHour = now.getHours()
-    const currentMinute = now.getMinutes()
-
-    const startOfDay = new Date(now)
-    startOfDay.setHours(0, 0, 0, 0)
-
-    const endOfDay = new Date(now)
-    endOfDay.setHours(23, 59, 59, 999)
-
     try {
-        const tasksResult = await Task.updateMany(
+
+        const users = await User.find(
+            {},
             {
-                // Condiciones
-                status: "pending",
-                completed: false,
-                date: {
-                    $gte: startOfDay,
-                    $lte: endOfDay
+                _id: 1,
+                timezone: 1
+            }
+        )
+
+        for (const user of users) {
+            const timezone = user.timezone || ""
+
+            const now = DateTime.now().setZone(timezone)
+
+            const currentHour = now.hour
+            const currentMinute = now.minute
+
+            const startOfDay = now.startOf("day").toJSDate();
+            const endOfDay = now.endOf("day").toJSDate();
+
+            const tasksResult = await Task.updateMany(
+                {
+                    userId: user._id,
+
+                    // Condiciones
+                    status: "pending",
+                    completed: false,
+                    date: {
+                        $gte: startOfDay,
+                        $lte: endOfDay
+                    },
+                    // Todas las tareas de la hora actual y antes
+                    $or: [
+                        { hour: { $lt: currentHour } },
+                        {
+                            hour: currentHour,
+                            minute: { $lte: currentMinute }
+                        }
+                    ]
                 },
-                // Todas las tareas de la hora actual y antes
-                $or: [
-                    { hour: { $lt: currentHour } },
-                    {
-                        hour: currentHour,
-                        minute: { $lte: currentMinute }
-                    }
-                ]
-            },
-            {
-                $set: { status: "in-progress" }
-            }
-        )
-
-        const subTasksResult = await Task.updateMany(
-            {
-                // Condiciones
-                "subTasks.status": "pending",
-                completed: false,
-                date: { $gte: startOfDay, $lte: endOfDay }
-            },
-            {
-                $set: {
-                    // Cambia el status solo a las sub tasks que tengan de nombre elem
-                    "subTasks.$[elem].status": "in-progress"
+                {
+                    $set: { status: "in-progress" }
                 }
-            },
-            {
-                arrayFilters: [
-                    {
-                        // Se pone un and por que debe cumplir estas dos condiciones
-                        $and: [
-                            { "elem.status": "pending" },
+            )
 
-                            {
-                                // Todas las tareas de la hora actual y antes
-                                $or: [
-                                    { "elem.hour": { $lt: currentHour } },
-                                    {
-                                        "elem.hour": currentHour,
-                                        "elem.minute": { $lte: currentMinute }
-                                    }
-                                ]
-                            }
-                        ]
+            const subTasksResult = await Task.updateMany(
+                {
+                    userId: user._id,
+                    // Condiciones
+                    "subTasks.status": "pending",
+                    completed: false,
+                    date: { $gte: startOfDay, $lte: endOfDay }
+                },
+                {
+                    $set: {
+                        // Cambia el status solo a las sub tasks que tengan de nombre elem
+                        "subTasks.$[elem].status": "in-progress"
                     }
-                ]
-            }
-        )
+                },
+                {
+                    arrayFilters: [
+                        {
+                            // Se pone un and por que debe cumplir estas dos condiciones
+                            $and: [
+                                { "elem.status": "pending" },
 
-        const missedTasksResult = await Task.updateMany(
-            {
-                completed: false,
-                status: { $in: ["pending", "in-progress"] },
-                date: { $lt: startOfDay }
-            },
-            {
-                $set: { status: "missed" }
-            }
-        )
-
-        const missedSubTasksResult = await Task.updateMany(
-            {
-                "subTasks.status": { $in: ["pending", "in-progress"] },
-                date: { $lt: startOfDay }
-            },
-            {
-                $set: {
-                    "subTasks.$[elem].status": "missed"
+                                {
+                                    // Todas las tareas de la hora actual y antes
+                                    $or: [
+                                        { "elem.hour": { $lt: currentHour } },
+                                        {
+                                            "elem.hour": currentHour,
+                                            "elem.minute": { $lte: currentMinute }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
                 }
-            },
-            {
-                arrayFilters: [
-                    {
-                        "elem.status": { $in: ["pending", "in-progress"] }
+            )
+
+            const missedTasksResult = await Task.updateMany(
+                {
+                    userId: user._id,
+                    completed: false,
+                    status: { $in: ["pending", "in-progress"] },
+                    date: { $lt: startOfDay }
+                },
+                {
+                    $set: { status: "missed" }
+                }
+            )
+
+            const missedSubTasksResult = await Task.updateMany(
+                {
+                    userId: user._id,
+                    "subTasks.status": { $in: ["pending", "in-progress"] },
+                    date: { $lt: startOfDay }
+                },
+                {
+                    $set: {
+                        "subTasks.$[elem].status": "missed"
                     }
-                ]
+                },
+                {
+                    arrayFilters: [
+                        {
+                            "elem.status": { $in: ["pending", "in-progress"] }
+                        }
+                    ]
+                }
+            )
+            const total =
+                tasksResult.modifiedCount +
+                subTasksResult.modifiedCount +
+                missedTasksResult.modifiedCount +
+                missedSubTasksResult.modifiedCount;
+
+            if (total > 0) {
+                console.log(
+                    `[${timezone}] ${now.toFormat("yyyy-MM-dd HH:mm")} → Actualizadas: ${total}`
+                );
             }
-        )
-
-        const total =
-            tasksResult.modifiedCount +
-            subTasksResult.modifiedCount
-
-        if (total > 0) {
-            console.log(`Actualizadas: ${total}`)
         }
-
     } catch (err) {
         console.error("Error en cron:", err)
     }

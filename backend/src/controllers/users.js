@@ -3,6 +3,7 @@ import Adv_Guest_Session from "../models/guest_sessions.js"
 import Task from "../models/tasks.js"
 import Automation from "../models/automations.js"
 import DailyStat from "../models/dailyStats.js"
+import { DateTime } from "luxon"
 
 const levelFromExp = (totalExp) => {
     return Math.max(
@@ -121,9 +122,6 @@ export const resetLevel = async (req, res) => {
 export const addDailyStats = async () => {
     const users = await User.find()
 
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-
     const expByDifficulty = {
         1: 50,
         2: 150,
@@ -134,22 +132,28 @@ export const addDailyStats = async () => {
 
     for (const user of users) {
 
+        const timezone = user.timezone || "UTC"
 
-         
-         if (
-             user.lastUpdateDate &&
-             user.lastUpdateDate.getTime() === today.getTime()
-         ) {
-             continue
-         }
+        const now = DateTime.now().setZone(timezone)
 
-        const start = new Date(today)
-        start.setDate(start.getDate() - 1)
+        const today = now.startOf("day")
 
-        const end = new Date(today.getTime() - 1)
+        const yesterday = today.minus({ days: 1 })
+
+        if (
+            user.lastUpdateDate &&
+            DateTime.fromJSDate(user.lastUpdateDate)
+                .setZone(timezone)
+                .hasSame(today, "day")
+        ) {
+            continue
+        }
+
+        const start = yesterday.toJSDate()
+        const end = today.minus({ milliseconds: 1 }).toJSDate()
 
         const tasks = await Task.find({
-            userId,
+            userId: user._id,
             completed: true,
             date: { $gte: start, $lte: end }
         })
@@ -240,4 +244,25 @@ export const deleteUser = async (req, res) => {
         return res.status(500).json({ message: "Error interno del servidor" });
     }
 
+}
+
+export const changeTimezone = async (req, res) => {
+    try {
+        const { timezone } = req.body
+
+        const user = await User.findByIdAndUpdate(
+            req.user.id,
+            { $set: { timezone: timezone } },
+            { new: true }
+        )
+
+        if (!user) {
+            return res.status(404).json({ message: "Usuario no encontrado" });
+        }
+
+        return res.status(200).json({ timezone: user.timezone });
+
+    } catch (err) {
+        return res.status(500).json({ message: "Error interno del servidor" });
+    }
 }

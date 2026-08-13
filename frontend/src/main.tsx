@@ -7,18 +7,21 @@ import { AuthProvider } from './context/AuthContext.tsx'
 import { StatsProvider } from './context/StatsContext.tsx'
 import { ThemeProvider } from './context/ThemeContext.tsx'
 import { TasksProvider } from './context/TasksContext.tsx'
+import { TimezoneProvider } from './context/TimezoneContext.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
     <ThemeProvider>
       <AuthProvider>
-        <TasksProvider>
-          <StatsProvider>
+        <TimezoneProvider>
+          <TasksProvider>
+            <StatsProvider>
 
-            <App />
+              <App />
 
-          </StatsProvider>
-        </TasksProvider>
+            </StatsProvider>
+          </TasksProvider>
+        </TimezoneProvider>
       </AuthProvider>
     </ThemeProvider>
   </BrowserRouter>

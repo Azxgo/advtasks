@@ -18,6 +18,8 @@ import type { TotalStatsAttributes } from "../types/Stats";
 import { useStatsContext } from "../context/StatsContext";
 import { useTasksContext } from "../context/TasksContext";
 import { EditTaskModal } from "../components/tasks/EditTaskModal";
+import { DateTime } from "luxon"
+import { useTimezoneContext } from "../context/TimezoneContext";
 
 export default function ToDo() {
     const [currentDate, setCurrentDate] = useState(new Date())
@@ -27,6 +29,8 @@ export default function ToDo() {
         updateSubTask, deleteSubTask, reOrderTasks, duplicateTask,
         saveAutomation, deleteAutomation } = useTasksActions(updateTask, setTasks)
     const { calendarMonth, setCalendarMonth, startOfWeek, weekDays, calendarDays } = useCalendar({ currentDate })
+
+    const { timezone } = useTimezoneContext();
     const { statsAttributes, fetchStats } = useStatsContext()
 
     const [weeklyScore, setWeeklyScore] = useState(0)
@@ -256,8 +260,14 @@ export default function ToDo() {
     );
 
     const isToday = (() => {
-        const today = new Date()
-        return currentDate.toDateString() === today.toDateString()
+        const today = DateTime.now().setZone(timezone).toFormat("yyyy-MM-dd");
+
+        const currentDay = DateTime
+            .fromJSDate(currentDate)
+            .setZone(timezone)
+            .toFormat("yyyy-MM-dd");
+
+        return currentDay === today;
     })()
 
     const totalStatsForDisplay: TotalStatsAttributes = allAttributes.reduce(
@@ -276,21 +286,27 @@ export default function ToDo() {
     const shouldActivate = (now: Date, taskDay: string, hour: number, minute: number, completed: boolean, status: string) => {
         const [year, month, day] = taskDay.split("-").map(Number);
 
-        const start = new Date(year, month - 1, day, hour, minute, 0, 0);
+        const start = DateTime.fromObject(
+            { year, month, day, hour, minute, second: 0, millisecond: 0 },
+            { zone: timezone }
+        );
+
+        const current = DateTime
+            .fromJSDate(now)
+            .setZone(timezone);
 
         return (
-            now >= start &&
+            current >= start &&
             !completed &&
             status === "pending"
         );
     };
 
-    const isPreviousDay = (taskDate: Date | string, now: Date) => {
-        const taskDay = typeof taskDate === "string"
-            ? taskDate.split("T")[0]
-            : taskDate.toLocaleDateString("sv-SE");
-
-        const today = now.toLocaleDateString("sv-SE");
+    const isPreviousDay = (taskDay: string, now: Date) => {
+        const today = DateTime
+            .fromJSDate(now)
+            .setZone(timezone)
+            .toFormat("yyyy-MM-dd");
 
         return taskDay < today;
     };
@@ -300,28 +316,30 @@ export default function ToDo() {
         let timeout: ReturnType<typeof setTimeout>
 
         const sync = () => {
-            const now = new Date()
-            const seconds = now.getSeconds()
-            const ms = now.getMilliseconds()
+            const now = new Date();
 
-            const delay = (60 - seconds) * 1000 - ms
+            const seconds = now.getSeconds();
+            const ms = now.getMilliseconds();
+
+            const delay = (60 - seconds) * 1000 - ms;
 
             timeout = setTimeout(() => {
-                updateTasksStatus()
+                updateTasksStatus();
 
                 interval = setInterval(() => {
-                    updateTasksStatus()
-                }, 60000)
-            }, delay)
-        }
+                    updateTasksStatus();
+                }, 60000);
+
+            }, delay);
+        };
 
         const updateTasksStatus = () => {
             const now = new Date()
-            const today = now.toLocaleDateString("sv-SE")
+            const today = DateTime.fromJSDate(now).setZone(timezone).toFormat("yyyy-MM-dd");
 
             setTasks(prev =>
                 prev.map(task => {
-                    const taskDay = task.date.split("T")[0]
+                    const taskDay = DateTime.fromJSDate(new Date(task.date)).setZone(timezone).toFormat("yyyy-MM-dd");
 
                     const sameDay = taskDay === today
 
@@ -366,7 +384,7 @@ export default function ToDo() {
             clearTimeout(timeout)
             clearInterval(interval)
         }
-    }, [])
+    }, [timezone])
 
     return (
 
