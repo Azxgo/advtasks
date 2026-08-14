@@ -1,4 +1,5 @@
 import Task from "../models/tasks.js"
+import User from "../models/users.js"
 import Automation from "../models/automations.js"
 import DailyStat from "../models/dailyStats.js"
 import Adv_Device from "../models/devices.js"
@@ -148,7 +149,7 @@ export const createTask = async (req, res) => {
 
                 tasksToCreate.push({
                     ...req.body,
-                    date: new Date(start),
+                    date: start,
                     userId,
                     order: newOrder
                 });

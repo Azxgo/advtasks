@@ -12,15 +12,15 @@ https://advtasks.vercel.app/
 
 # Características
 
--👤 Creación de usuarios y acceso como invitado.
--🤖 Creación inmediata de tareas.
--✏️ Edición de las características de una tarea, como nombre, hora, estado y atributos.
--📋 Creación de subtareas dentro de una tarea.
--🎯 Sistema de dificultad y atributos para las tareas.
--📅 Navegación entre las tareas del día y el calendario.
--🔄 Sistema automático de cambios de estado.
--⚙️ Automatización de tareas.
--📊 Registro automático de estadísticas diarias al finalizar el día.
+- 👤 Creación de usuarios y acceso como invitado.
+- 🤖 Creación inmediata de tareas.
+- ✏️ Edición de las características de una tarea, como nombre, hora, estado y atributos.
+- 📋 Creación de subtareas dentro de una tarea.
+- 🎯 Sistema de dificultad y atributos para las tareas.
+- 📅 Navegación entre las tareas del día y el calendario.
+- 🔄 Sistema automático de cambios de estado.
+- ⚙️ Automatización de tareas.
+- 📊 Registro automático de estadísticas diarias al finalizar el día.
 
 ## Tecnologías
 
