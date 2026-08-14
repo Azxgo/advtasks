@@ -3,6 +3,7 @@ import Automation from "../models/automations.js"
 import DailyStat from "../models/dailyStats.js"
 import Adv_Device from "../models/devices.js"
 import Adv_Guest_Session from "../models/guest_sessions.js"
+import { DateTime } from "luxon";
 
 export const getTasks = async (req, res) => {
     try {
@@ -50,9 +51,22 @@ export const createTask = async (req, res) => {
 
         const userId = req.user?.id || req.guestSession?.id;
 
+        const user = await User.findById(userId).select("timezone")
+
+        const timezone = user?.timezone || "America/Santiago";
+
         if (!repeatTask) {
-            const start = new Date(`${date}T00:00:00`);
-            const end = new Date(`${date}T23:59:59.999`);
+            const start = DateTime
+                .fromISO(date, { zone: timezone })
+                .startOf("day")
+                .toUTC()
+                .toJSDate();
+
+            const end = DateTime
+                .fromISO(date, { zone: timezone })
+                .endOf("day")
+                .toUTC()
+                .toJSDate();
 
             const lastTask = await Task.findOne({
                 userId,
@@ -96,20 +110,29 @@ export const createTask = async (req, res) => {
 
         const tasksToCreate = []
 
-        const current = new Date(`${date}T00:00:00`);
-        const final = new Date(`${endDate}T00:00:00`);
+        let current = DateTime
+            .fromISO(date, { zone: timezone })
+            .startOf("day");
+
+        const final = DateTime
+            .fromISO(endDate, { zone: timezone })
+            .startOf("day");
 
         while (current <= final) {
-            let day = current.getDay()
+            const day = current.weekday;
 
             day = day === 0 ? 7 : day
 
             if (selectedDays.includes(day)) {
-                const start = new Date(current)
-                start.setHours(0, 0, 0, 0)
+                const start = current
+                    .startOf("day")
+                    .toUTC()
+                    .toJSDate();
 
-                const end = new Date(current)
-                end.setHours(23, 59, 59, 999)
+                const end = current
+                    .endOf("day")
+                    .toUTC()
+                    .toJSDate();
 
                 const lastTask = await Task.findOne({
                     userId,
