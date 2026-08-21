@@ -192,7 +192,7 @@ export function Header({ }) {
                                 onClick={quitGuest}
                             >
                                 <FaSignOutAlt color="gray" size={22} />
-                                <p className="text-md font-semibold">Cerrar Sesiónn</p>
+                                <p className="text-md font-semibold">Cerrar Sesión</p>
                             </MenuItem>
                         ) : (
                             <>

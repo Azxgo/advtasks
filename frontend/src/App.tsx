@@ -12,7 +12,6 @@ import { PublicRoutes } from './pages/protect/PublicRoutes'
 function App() {
   return (
     <div className='m-0 p-0 min-h-screen bg-white dark:bg-zinc-800 transition-colors duration-300'>
-
       <Routes >
         <Route element={<ProtectRoutes />}>
           <Route element={<MainLayout />}>

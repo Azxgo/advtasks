@@ -11,8 +11,6 @@ export const PublicRoutes = () => {
                 <div className="animate-spin border-2 border-zinc-400 border-t-transparent rounded-full w-18 h-18 mb-2" />
             </div>
         )
-
-
     }
 
     if (user || isGuest) {
