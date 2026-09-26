@@ -104,6 +104,7 @@ export function AddTaskModal({ onClose, onAdd }: Props) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center "
             onClick={onClose}
         >
@@ -114,7 +115,7 @@ export function AddTaskModal({ onClose, onAdd }: Props) {
                 transition={{ duration: 0.2 }}
                 onClick={(e) => e.stopPropagation()}
                 className="relative bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-xl p-6 
-                w-[90vw] sm:min-w-[700px] max-w-[800px] max-h-[90vh] shadow-lg"
+                w-[90vw] sm:min-w-[700px] max-w-[800px] max-h-[90vh] shadow-lg overflow-y-auto"
             >
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-base sm:text-xl font-bold">

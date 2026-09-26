@@ -85,6 +85,7 @@ export function CalendarModal({ calendarMonth, calendarDays, currentDate, change
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             className="fixed inset-0 bg-black/40 flex items-center justify-center"
             onClick={onClose}
         >
